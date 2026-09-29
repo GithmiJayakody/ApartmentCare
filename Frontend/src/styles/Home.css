@@ -1,0 +1,1031 @@
+/* =========================
+   GLOBAL
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Poppins","Segoe UI",sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+
+.home-page{
+    width:100%;
+    background:#f4faff;
+    color:#10284b;
+    overflow:hidden;
+}
+
+
+
+
+
+/* =========================
+   NAVBAR GLASS FIXED
+========================= */
+
+
+.navbar{
+
+    position:fixed;
+
+    top:20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+
+    width:88%;
+
+    height:75px;
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+
+    padding:0 35px;
+
+
+
+    background:
+
+    rgba(20,35,55,0.55);
+
+
+
+    backdrop-filter:blur(25px);
+
+    -webkit-backdrop-filter:blur(25px);
+
+
+
+    border:
+
+    1px solid rgba(255,255,255,0.25);
+
+
+
+    border-radius:40px;
+
+
+
+    box-shadow:
+
+    0 15px 40px rgba(0,0,0,0.35);
+
+
+
+    z-index:9999;
+
+}
+
+
+
+
+
+.nav-logo img{
+
+    width:150px;
+
+}
+
+
+
+
+
+.nav-links{
+
+    display:flex;
+
+    gap:40px;
+
+}
+
+
+
+
+
+.nav-links a{
+
+    text-decoration:none;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+
+
+.nav-links a:hover{
+
+    color:#20d9c5;
+
+}
+
+
+
+
+
+.nav-buttons{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+
+
+
+.login-btn{
+
+
+    padding:12px 35px;
+
+
+    border-radius:30px;
+
+
+
+    border:2px solid #20d9c5;
+
+
+
+    background:
+
+    rgba(255,255,255,0.15);
+
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    font-weight:600;
+
+
+    cursor:pointer;
+
+}
+
+
+
+.login-btn:hover{
+
+    background:#20d9c5;
+
+    color:#10284b;
+
+}
+
+
+
+
+
+.start-btn{
+
+
+    padding:13px 35px;
+
+
+    border:none;
+
+
+    border-radius:30px;
+
+
+
+    background:
+
+    linear-gradient(
+    135deg,
+    #1597e5,
+    #20d9c5
+    );
+
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    font-weight:600;
+
+
+    cursor:pointer;
+
+}
+
+
+
+
+
+
+/* =========================
+ HERO
+========================= */
+
+
+.hero{
+
+
+    height:680px;
+
+
+
+    background:
+
+
+    linear-gradient(
+
+    90deg,
+
+    rgba(0,20,50,.75),
+
+    rgba(0,20,50,.25)
+
+    ),
+
+
+
+    url("/onlybackground.png");
+
+
+
+    background-size:cover;
+
+
+    background-position:center;
+
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+
+    padding-left:8%;
+
+
+
+}
+
+
+
+
+
+
+.hero-content{
+
+
+    max-width:650px;
+
+
+    color:white;
+
+}
+
+
+
+
+.hero-content h1{
+
+
+    font-size:65px;
+
+
+    line-height:1.15;
+
+
+    font-weight:800;
+
+
+}
+
+
+
+
+
+.hero-content h1 span{
+
+
+    color:#20d9c5;
+
+
+}
+
+
+
+
+
+.hero-content p{
+
+
+    margin-top:25px;
+
+
+    font-size:20px;
+
+
+    line-height:1.6;
+
+
+}
+
+
+
+
+
+
+.hero-buttons{
+
+
+    margin-top:35px;
+
+
+    display:flex;
+
+
+    gap:20px;
+
+
+}
+
+
+
+
+
+
+.hero-buttons button{
+
+
+    padding:16px 40px;
+
+
+    border-radius:35px;
+
+
+    font-size:17px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+
+.primary{
+
+
+    border:none;
+
+
+    color:white;
+
+
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #1597e5,
+
+    #20d9c5
+
+    );
+
+}
+
+
+
+.secondary{
+
+
+    background:transparent;
+
+
+    color:white;
+
+
+    border:2px solid white;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+ FEATURE GLASS CARDS
+========================= */
+
+
+.features{
+
+
+    width:85%;
+
+
+
+    margin:-60px auto 0;
+
+
+
+    display:grid;
+
+
+
+    grid-template-columns:repeat(4,1fr);
+
+
+
+    gap:30px;
+
+
+
+    position:relative;
+
+
+
+    z-index:5;
+
+
+}
+
+
+
+
+
+.feature-link{
+
+
+    text-decoration:none !important;
+
+
+    color:inherit;
+
+
+    display:block;
+
+
+}
+
+
+
+
+
+
+.feature-card{
+
+
+
+    height:300px;
+
+
+
+    padding:35px;
+
+
+
+    border-radius:25px;
+
+
+
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    rgba(255,255,255,.65),
+
+    rgba(220,245,255,.45)
+
+    );
+
+
+
+
+
+    backdrop-filter:blur(20px);
+
+
+    -webkit-backdrop-filter:blur(20px);
+
+
+
+
+
+    border:
+
+    1px solid rgba(32,217,197,.30);
+
+
+
+
+
+    box-shadow:
+
+
+    0 20px 45px rgba(16,40,75,.18);
+
+
+
+
+
+    transition:.3s;
+
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+
+}
+
+
+
+
+.feature-card:hover{
+
+
+    transform:translateY(-10px);
+
+
+}
+
+
+
+
+
+
+.icon{
+
+
+    width:55px;
+
+
+    height:55px;
+
+
+
+    border-radius:50%;
+
+
+
+    display:flex;
+
+
+
+    align-items:center;
+
+
+
+    justify-content:center;
+
+
+
+
+
+    background:
+
+    rgba(32,217,197,.18);
+
+
+
+    font-size:25px;
+
+
+
+}
+
+
+
+
+
+
+
+.feature-card h3{
+
+
+    margin-top:25px;
+
+
+    font-size:22px;
+
+
+    color:#10284b;
+
+
+    text-decoration:none !important;
+
+
+}
+
+
+
+
+
+
+
+.feature-card p{
+
+
+    margin-top:10px;
+
+
+    color:#536174;
+
+
+    line-height:1.6;
+
+
+}
+
+
+
+
+
+.arrow{
+
+
+    margin-top:auto;
+
+
+
+    text-align:right;
+
+
+
+    color:#1597e5;
+
+
+
+    font-size:25px;
+
+
+}
+
+
+
+
+
+/* =========================
+ ABOUT
+========================= */
+
+
+.about{
+
+
+    width:85%;
+
+
+    margin:100px auto;
+
+
+
+    display:grid;
+
+
+
+    grid-template-columns:1fr 1fr;
+
+
+
+    gap:50px;
+
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+
+.about-text small{
+
+
+    color:#20d9c5;
+
+
+    letter-spacing:5px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+.about-text h2{
+
+
+    margin-top:20px;
+
+
+    font-size:45px;
+
+
+}
+
+
+
+
+
+.about-text p{
+
+
+    margin-top:20px;
+
+
+    font-size:18px;
+
+
+    color:#536174;
+
+
+    line-height:1.7;
+
+
+}
+
+
+
+
+
+
+/* =========================
+ STATS
+========================= */
+
+
+.stats{
+
+
+    background:
+
+    rgba(255,255,255,.75);
+
+
+
+    backdrop-filter:blur(15px);
+
+
+
+    border-radius:30px;
+
+
+
+    padding:50px;
+
+
+
+    display:grid;
+
+
+
+    grid-template-columns:1fr 1fr;
+
+
+
+    gap:40px;
+
+
+
+
+    box-shadow:
+
+
+    0 20px 50px rgba(16,40,75,.12);
+
+
+}
+
+
+
+
+
+
+.stat-box h2{
+
+
+    font-size:40px;
+
+
+    color:#10284b;
+
+
+}
+
+
+
+
+
+.stat-box p{
+
+
+    color:#68768a;
+
+
+}
+
+
+
+
+
+
+/* =========================
+ ROOM GALLERY
+========================= */
+
+
+.room-gallery{
+
+
+    width:85%;
+
+
+
+    margin:80px auto;
+
+
+
+    display:grid;
+
+
+
+    grid-template-columns:repeat(4,1fr);
+
+
+
+    gap:30px;
+
+
+}
+
+
+
+
+
+.room-card{
+
+
+    background:white;
+
+
+
+    border-radius:25px;
+
+
+
+    overflow:hidden;
+
+
+
+
+    box-shadow:
+
+
+    0 15px 35px rgba(0,0,0,.12);
+
+
+}
+
+
+
+
+
+
+.room-card img{
+
+
+    width:100%;
+
+
+
+    height:220px;
+
+
+
+    object-fit:cover;
+
+
+}
+
+
+
+
+
+
+.room-card h3{
+
+
+    padding:20px;
+
+
+
+    text-align:center;
+
+
+
+    color:#10284b;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+ RESPONSIVE
+========================= */
+
+
+@media(max-width:900px){
+
+
+.nav-links{
+
+    display:none;
+
+}
+
+
+
+.features,
+
+.room-gallery{
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.about{
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.stats{
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.hero-content h1{
+
+    font-size:40px;
+
+}
+
+
+}
