@@ -1,593 +1,473 @@
 import "../styles/Home.css";
 import { Link } from "react-router-dom";
 
+function Home() {
+    return (
+        <div className="home-page">
 
-function Home(){
+            {/* ================= NAVBAR ================= */}
 
+            <nav className="navbar">
 
-return(
+                <div className="nav-logo">
 
+                    <Link to="/">
 
-<div className="home-page">
+                        <img
+                            src="/livoralogo.png"
+                            alt="Livora Logo"
+                        />
 
+                    </Link>
 
-{/* ================= NAVBAR ================= */}
+                </div>
 
 
-<nav className="navbar">
+                <div className="nav-links">
 
+                    <a href="#home">
+                        Home
+                    </a>
 
-<div className="nav-logo">
+                    <a href="#features">
+                        Features
+                    </a>
 
-<img src="/livoralogo.png" />
+                    <a href="#about">
+                        About
+                    </a>
 
-</div>
+                    <a href="#contact">
+                        Contact
+                    </a>
 
+                </div>
 
 
-<div className="nav-links">
+                <div className="nav-buttons">
 
-<a href="#">Home</a>
-<a href="#">Features</a>
-<a href="#">About</a>
-<a href="#">Contact</a>
+                    <Link to="/login">
 
-</div>
+                        <button className="login-btn">
+                            Login
+                        </button>
 
+                    </Link>
 
 
-<div className="nav-buttons">
+                    <Link to="/login">
 
+                        <button className="start-btn">
+                            Get Started →
+                        </button>
 
-<Link to="/login">
+                    </Link>
 
-<button className="login-btn">
+                </div>
 
-Login
+            </nav>
 
-</button>
 
-</Link>
+            {/* ================= HERO ================= */}
 
+            <section
+                className="hero"
+                id="home"
+            >
 
+                <div className="hero-content">
 
-<Link to="/login">
+                    <h1>
 
-<button className="start-btn">
+                        More than a home,
 
-Get Started →
+                        <br />
 
-</button>
+                        a <span>better living</span> experience
 
-</Link>
+                    </h1>
 
 
-</div>
+                    <p>
 
+                        Manage your apartment maintenance, communicate
+                        with your community, and make your living easier
+                        with Livora.
 
-</nav>
+                    </p>
 
 
+                    <div className="hero-buttons">
 
+                        {/* Get Started → Login */}
 
+                        <Link to="/login">
 
-{/* ================= HERO ================= */}
+                            <button className="primary">
+                                Get Started →
+                            </button>
 
+                        </Link>
 
-<section className="hero">
 
+                        {/* Learn More → Features */}
 
-<div className="hero-content">
+                        <a href="#features">
 
+                            <button className="secondary">
+                                ▶ Learn More
+                            </button>
 
-<h1>
+                        </a>
 
-More than a home,
+                    </div>
 
-<br/>
+                </div>
 
-a <span>better living</span> experience
+            </section>
 
 
-</h1>
+            {/* ================= FEATURES ================= */}
 
+            <section
+                className="features"
+                id="features"
+            >
 
 
-<p>
+                {/* ================= RESIDENT ================= */}
 
-Manage your apartment maintenance, communicate 
-with your community, and make your living easier 
-with Livora.
+                <Link
+                    to="/login?role=resident"
+                    className="feature-link"
+                >
 
-</p>
+                    <div className="feature-card">
 
+                        <div className="icon">
+                            🏠
+                        </div>
 
 
+                        <h3>
+                            For Residents
+                        </h3>
 
-<div className="hero-buttons">
 
+                        <p>
+                            Submit maintenance requests and track
+                            their status easily.
+                        </p>
 
-<Link to="/login">
 
-<button className="primary">
+                        <span className="arrow">
+                            →
+                        </span>
 
-Get Started →
+                    </div>
 
-</button>
+                </Link>
 
-</Link>
 
+                {/* ================= TECHNICIAN ================= */}
 
+                <Link
+                    to="/login?role=technician"
+                    className="feature-link"
+                >
 
-<Link to="/login">
+                    <div className="feature-card">
 
-<button className="secondary">
+                        <div className="icon">
+                            🔧
+                        </div>
 
-▶ Learn More
 
-</button>
+                        <h3>
+                            For Technicians
+                        </h3>
 
-</Link>
 
+                        <p>
+                            View assigned tasks, update progress
+                            and manage your work.
+                        </p>
 
 
-</div>
+                        <span className="arrow">
+                            →
+                        </span>
 
+                    </div>
 
+                </Link>
 
-</div>
 
+                {/* ================= MANAGER ================= */}
 
-</section>
+                <Link
+                    to="/login?role=manager"
+                    className="feature-link"
+                >
 
+                    <div className="feature-card">
 
+                        <div className="icon">
+                            👥
+                        </div>
 
 
+                        <h3>
+                            For Managers
+                        </h3>
 
 
+                        <p>
+                            Manage residents, assign technicians
+                            and monitor activities.
+                        </p>
 
-{/* ================= FEATURES ================= */}
 
+                        <span className="arrow">
+                            →
+                        </span>
 
+                    </div>
 
-<section className="features">
+                </Link>
 
+            </section>
 
 
-<Link to="/login" className="feature-link">
+            {/* ================= ABOUT ================= */}
 
+            <section
+                className="about"
+                id="about"
+            >
 
-<div className="feature-card">
+                <div className="about-text">
 
+                    <small>
+                        ABOUT LIVORA
+                    </small>
 
-<div className="icon">
 
-🏠
+                    <h2>
 
-</div>
+                        Building better
 
+                        <br />
 
-<h3>
+                        communities together
 
-For Residents
+                    </h2>
 
-</h3>
 
+                    <p>
 
-<p>
+                        Livora is a modern apartment maintenance
+                        management system designed to simplify
+                        communication between residents, maintenance
+                        staff and managers.
 
-Submit maintenance requests and track their status easily.
+                    </p>
 
-</p>
 
+                    <p>
 
-<span className="arrow">
+                        Our goal is to create a cleaner, safer and
+                        more comfortable living environment for everyone.
 
-→
+                    </p>
 
-</span>
+                </div>
 
 
-</div>
+                {/* ================= STATS ================= */}
 
+                <div className="stats">
 
-</Link>
 
+                    <div className="stat-box">
 
+                        <h2>
+                            500+
+                        </h2>
 
+                        <p>
+                            Happy Residents
+                        </p>
 
+                    </div>
 
 
+                    <div className="stat-box">
 
-<Link to="/login" className="feature-link">
+                        <h2>
+                            1200+
+                        </h2>
 
+                        <p>
+                            Maintenance Tasks
+                        </p>
 
-<div className="feature-card">
+                    </div>
 
 
-<div className="icon">
+                    <div className="stat-box">
 
-🔧
+                        <h2>
+                            15+
+                        </h2>
 
-</div>
+                        <p>
+                            Apartment Complexes
+                        </p>
 
+                    </div>
 
-<h3>
 
-For Technicians
+                    <div className="stat-box">
 
-</h3>
+                        <h2>
+                            98%
+                        </h2>
 
+                        <p>
+                            Satisfaction Rate
+                        </p>
 
-<p>
+                    </div>
 
-View assigned tasks, update progress and manage your work.
+                </div>
 
-</p>
+            </section>
 
 
-<span className="arrow">
+            {/* ================= ROOM GALLERY ================= */}
 
-→
+            <section className="room-gallery">
 
-</span>
 
+                <div className="room-card">
 
-</div>
+                    <img
+                        src="/livingroom.png"
+                        alt="Living Room"
+                    />
 
+                    <h3>
+                        Living Room
+                    </h3>
 
-</Link>
+                </div>
 
 
+                <div className="room-card">
 
+                    <img
+                        src="/bedroom.png"
+                        alt="Bedroom"
+                    />
 
+                    <h3>
+                        Bedroom
+                    </h3>
 
+                </div>
 
 
+                <div className="room-card">
 
-<Link to="/login" className="feature-link">
+                    <img
+                        src="/kitchen.png"
+                        alt="Kitchen"
+                    />
 
+                    <h3>
+                        Kitchen
+                    </h3>
 
-<div className="feature-card">
+                </div>
 
 
-<div className="icon">
+                <div className="room-card">
 
-👥
+                    <img
+                        src="/washroom.png"
+                        alt="Washroom"
+                    />
 
-</div>
+                    <h3>
+                        Washroom
+                    </h3>
 
+                </div>
 
-<h3>
+            </section>
 
-For Managers
 
-</h3>
+            {/* ================= CONTACT ================= */}
 
+            <section
+                id="contact"
+                style={{
+                    padding: "80px 8%",
+                    textAlign: "center"
+                }}
+            >
 
-<p>
+                <small
+                    style={{
+                        color: "#20d9c5",
+                        letterSpacing: "4px",
+                        fontWeight: "700"
+                    }}
+                >
+                    CONTACT LIVORA
+                </small>
 
-Manage residents, assign technicians and monitor activities.
 
-</p>
+                <h2
+                    style={{
+                        marginTop: "15px",
+                        fontSize: "40px",
+                        color: "#10284b"
+                    }}
+                >
+                    Ready to make apartment living easier?
+                </h2>
 
 
-<span className="arrow">
+                <p
+                    style={{
+                        marginTop: "15px",
+                        color: "#536174",
+                        fontSize: "18px"
+                    }}
+                >
+                    Get started with Livora today.
+                </p>
 
-→
 
-</span>
+                <Link to="/login">
 
+                    <button
+                        className="start-btn"
+                        style={{
+                            marginTop: "25px"
+                        }}
+                    >
+                        Get Started →
+                    </button>
 
-</div>
+                </Link>
 
+            </section>
 
-</Link>
-
-
-
-
-
-
-
-
-<Link to="/login" className="feature-link">
-
-
-<div className="icon">
-
-🛡
-
-</div>
-
-
-<div className="feature-card">
-
-
-<h3>
-
-Secure & Reliable
-
-</h3>
-
-
-<p>
-
-Safe and organized apartment management with role-based access.
-
-</p>
-
-
-<span className="arrow">
-
-→
-
-</span>
-
-
-</div>
-
-
-</Link>
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-{/* ================= ABOUT ================= */}
-
-
-
-<section className="about">
-
-
-
-<div className="about-text">
-
-
-<small>
-
-ABOUT LIVORA
-
-</small>
-
-
-
-<h2>
-
-Building better
-
-<br/>
-
-communities together
-
-</h2>
-
-
-
-
-<p>
-
-Livora is a modern apartment maintenance management 
-system designed to simplify communication between 
-residents, maintenance staff and managers.
-
-</p>
-
-
-
-<p>
-
-Our goal is to create a cleaner, safer and more comfortable 
-living environment for everyone.
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div className="stats">
-
-
-
-<div className="stat-box">
-
-<h2>
-
-500+
-
-</h2>
-
-<p>
-
-Happy Residents
-
-</p>
-
-</div>
-
-
-
-
-
-<div className="stat-box">
-
-<h2>
-
-1200+
-
-</h2>
-
-<p>
-
-Maintenance Tasks
-
-</p>
-
-</div>
-
-
-
-
-
-<div className="stat-box">
-
-<h2>
-
-15+
-
-</h2>
-
-<p>
-
-Apartment Complexes
-
-</p>
-
-</div>
-
-
-
-
-
-<div className="stat-box">
-
-<h2>
-
-98%
-
-</h2>
-
-<p>
-
-Satisfaction Rate
-
-</p>
-
-</div>
-
-
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-{/* ================= ROOM GALLERY ================= */}
-
-
-
-<section className="room-gallery">
-
-
-
-<div className="room-card">
-
-
-<img src="/livingroom.png"/>
-
-<h3>
-
-Living Room
-
-</h3>
-
-
-</div>
-
-
-
-
-
-<div className="room-card">
-
-
-<img src="/bedroom.png"/>
-
-<h3>
-
-Bedroom
-
-</h3>
-
-
-</div>
-
-
-
-
-
-
-<div className="room-card">
-
-
-<img src="/kitchen.png"/>
-
-<h3>
-
-Kitchen
-
-</h3>
-
-
-</div>
-
-
-
-
-
-
-<div className="room-card">
-
-
-<img src="/washroom.png"/>
-
-<h3>
-
-Washroom
-
-</h3>
-
-
-</div>
-
-
-
-
-
-</section>
-
-
-
-
-</div>
-
-
-);
-
-
+        </div>
+    );
 }
-
 
 export default Home;

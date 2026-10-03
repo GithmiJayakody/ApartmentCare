@@ -4,39 +4,72 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+import ResidentDashboard from "./pages/ResidentDashboard";
+import TechnicianDashboard from "./pages/TechnicianDashboard";
+import ManagerDashboard from "./pages/ManagerDashboard";
+
 
 function App() {
 
-  return (
+    return (
 
-    <BrowserRouter>
+        <BrowserRouter>
 
-      <Routes>
+            <Routes>
 
-        <Route 
-          path="/" 
-          element={<Home />}
-        />
+                {/* ================= HOME ================= */}
 
-
-        <Route 
-          path="/login" 
-          element={<Login />}
-        />
+                <Route
+                    path="/"
+                    element={<Home />}
+                />
 
 
-        <Route 
-          path="/register" 
-          element={<Register />}
-        />
+                {/* ================= REGISTER ================= */}
+
+                <Route
+                    path="/register"
+                    element={<Register />}
+                />
 
 
-      </Routes>
+                {/* ================= LOGIN ================= */}
+
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
 
-    </BrowserRouter>
+                {/* ================= RESIDENT DASHBOARD ================= */}
 
-  );
+                <Route
+                    path="/resident-dashboard"
+                    element={<ResidentDashboard />}
+                />
+
+
+                {/* ================= TECHNICIAN DASHBOARD ================= */}
+
+                <Route
+                    path="/technician-dashboard"
+                    element={<TechnicianDashboard />}
+                />
+
+
+                {/* ================= MANAGER DASHBOARD ================= */}
+
+                <Route
+                    path="/manager-dashboard"
+                    element={<ManagerDashboard />}
+                />
+
+            </Routes>
+
+        </BrowserRouter>
+
+    );
+
 }
 
 

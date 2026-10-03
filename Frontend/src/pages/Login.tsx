@@ -1,297 +1,413 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/Login.css";
 
-import { Link, useNavigate } from "react-router-dom";
-
-import { useState } from "react";
-
-
-function Login(){
-
+function Login() {
 
     const navigate = useNavigate();
 
+    // Get role from URL
+    const [searchParams] = useSearchParams();
 
-    const [email,setEmail] = useState("");
-
-    const [password,setPassword] = useState("");
-
-
+    const roleFromUrl = searchParams.get("role");
 
 
-    const handleLogin = (e:any)=>{
+    const [email, setEmail] = useState("");
 
+    const [password, setPassword] = useState("");
+
+    const [role, setRole] = useState(
+        roleFromUrl === "technician"
+            ? "Technician"
+            : roleFromUrl === "manager"
+                ? "Manager"
+                : "Resident"
+    );
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [rememberMe, setRememberMe] = useState(false);
+
+    const [error, setError] = useState("");
+
+
+    // Automatically change Login As according to
+    // the role selected from the Home page
+
+    useEffect(() => {
+
+        if (roleFromUrl === "resident") {
+
+            setRole("Resident");
+
+        }
+
+        else if (roleFromUrl === "technician") {
+
+            setRole("Technician");
+
+        }
+
+        else if (roleFromUrl === "manager") {
+
+            setRole("Manager");
+
+        }
+
+    }, [roleFromUrl]);
+
+
+    // ================================
+    // LOGIN
+    // ================================
+
+    const handleLogin = (e: React.FormEvent) => {
 
         e.preventDefault();
 
-
-        // temporary frontend login
-        // backend connection will be added later
+        setError("");
 
 
-        if(email && password){
+        // Frontend-only validation
+
+        if (!email || !password) {
+
+            setError(
+                "Please enter your email and password."
+            );
+
+            return;
+        }
 
 
-            navigate("/");
+        // Save login information
 
+        if (rememberMe) {
+
+            localStorage.setItem(
+                "livoraEmail",
+                email
+            );
+
+            localStorage.setItem(
+                "livoraRole",
+                role
+            );
 
         }
 
-        else{
 
+        // ================================
+        // ROLE BASED DASHBOARD
+        // ================================
 
-            alert("Please enter email and password");
+        if (role === "Resident") {
 
+            navigate("/resident-dashboard");
 
         }
 
+        else if (role === "Technician") {
+
+            navigate("/technician-dashboard");
+
+        }
+
+        else if (role === "Manager") {
+
+            navigate("/manager-dashboard");
+
+        }
 
     };
 
 
-
-
-
-    return(
-
+    return (
 
         <div className="login-page">
 
 
+            {/* ================================
+                BACKGROUND OVERLAY
+            ================================= */}
 
-            <div className="login-overlay">
-
-
-
-
-
-                <form 
-                className="login-card"
-                onSubmit={handleLogin}
-                >
+            <div className="login-overlay"></div>
 
 
+            {/* ================================
+                LOGIN CARD
+            ================================= */}
+
+            <div className="login-card">
+
+
+                {/* ================================
+                    LOGO
+                ================================= */}
+
+                <div className="login-logo-container">
 
                     <img
-
-                    src="/livoralogo.png"
-
-                    className="logo"
-
-                    alt="Livora"
-
+                        src="/livoralogo.png"
+                        alt="Livora Logo"
+                        className="login-logo"
                     />
 
+                </div>
 
 
+                {/* ================================
+                    TITLE
+                ================================= */}
 
-
-                    <h1>
-
+                <h1>
                     Welcome Back
-
-                    </h1>
-
+                </h1>
 
 
-
-
-                    <p>
-
+                <p className="login-subtitle">
                     Login to continue
-
-                    </p>
-
+                </p>
 
 
+                {/* ================================
+                    LOGIN FORM
+                ================================= */}
+
+                <form onSubmit={handleLogin}>
 
 
+                    {/* ================================
+                        EMAIL
+                    ================================= */}
 
-                    <input
+                    <div className="input-group">
 
-                    type="email"
-
-                    placeholder="Email address"
-
-                    value={email}
-
-                    onChange={(e)=>
-                    setEmail(e.target.value)
-                    }
-
-                    />
+                        <span className="input-icon">
+                            ✉
+                        </span>
 
 
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={email}
+                            onChange={(e) =>
+                                setEmail(e.target.value)
+                            }
+                        />
+
+                    </div>
 
 
+                    {/* ================================
+                        PASSWORD
+                    ================================= */}
+
+                    <div className="input-group">
+
+                        <span className="input-icon">
+                            🔒
+                        </span>
 
 
-                    <input
-
-                    type="password"
-
-                    placeholder="Password"
-
-                    value={password}
-
-                    onChange={(e)=>
-                    setPassword(e.target.value)
-                    }
-
-                    />
-
+                        <input
+                            type={
+                                showPassword
+                                    ? "text"
+                                    : "password"
+                            }
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                        />
 
 
+                        <button
+                            type="button"
+                            className="password-eye"
+                            onClick={() =>
+                                setShowPassword(
+                                    !showPassword
+                                )
+                            }
+                        >
+
+                            {showPassword
+                                ? "◉"
+                                : "◌"
+                            }
+
+                        </button>
+
+                    </div>
 
 
+                    {/* ================================
+                        LOGIN AS
+                    ================================= */}
+
+                    <div className="role-label">
+
+                        Login as
+
+                    </div>
 
 
-
-                    <label className="login-as">
-
-                    Login as
-
-                    </label>
+                    <div className="role-select">
 
 
+                        <span className="role-icon">
+                            ♙
+                        </span>
 
 
+                        <select
+                            value={role}
+                            onChange={(e) =>
+                                setRole(e.target.value)
+                            }
+                        >
+
+                            <option value="Resident">
+                                🏠 Resident
+                            </option>
 
 
-                    <select>
+                            <option value="Technician">
+                                🔧 Technician
+                            </option>
 
 
-                        <option>
-                            Resident
-                        </option>
+                            <option value="Manager">
+                                👨‍💼 Manager
+                            </option>
+
+                        </select>
 
 
-                        <option>
-                            Technician
-                        </option>
+                        <span className="select-arrow">
+                            ⌄
+                        </span>
+
+                    </div>
 
 
-                        <option>
-                            Manager
-                        </option>
+                    {/* ================================
+                        ERROR
+                    ================================= */}
+
+                    {error && (
+
+                        <div className="login-error">
+
+                            {error}
+
+                        </div>
+
+                    )}
 
 
-                    </select>
+                    {/* ================================
+                        REMEMBER + FORGOT
+                    ================================= */}
+
+                    <div className="login-options">
 
 
+                        <label className="remember">
+
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) =>
+                                    setRememberMe(
+                                        e.target.checked
+                                    )
+                                }
+                            />
 
 
-
-
-
-
-                    <div className="options">
-
-
-                        <label>
-
-                        <input type="checkbox"/>
-
-                        Remember me
+                            <span>
+                                Remember me
+                            </span>
 
                         </label>
 
 
-
-
-                        <a>
-
-                        Forgot Password?
-
-                        </a>
-
-
+                        <button
+                            type="button"
+                            className="forgot-password"
+                        >
+                            Forgot Password?
+                        </button>
 
                     </div>
 
 
+                    {/* ================================
+                        SIGN IN
+                    ================================= */}
 
-
-
-
-
-
-                    <button type="submit">
-
-                    Sign In →
-
+                    <button
+                        type="submit"
+                        className="login-submit"
+                    >
+                        Sign In →
                     </button>
-
-
-
-
-
-
-
-
-                    <div className="register-link">
-
-
-                    Don't have an account?
-
-
-                    <Link to="/register">
-
-                    Create Account
-
-                    </Link>
-
-
-                    </div>
-
-
-
-
-
-
-
-
-                    <div className="footer">
-
-
-                        <span>
-                        © 2026 Livora Inc.
-                        </span>
-
-
-                        <span>
-                        Help Center
-                        </span>
-
-
-                        <span>
-                        English (US)
-                        </span>
-
-
-                    </div>
-
-
-
 
 
                 </form>
 
 
+                {/* ================================
+                    REGISTER
+                ================================= */}
 
+                <div className="register-link">
+
+                    <span>
+                        Don't have an account?
+                    </span>
+
+
+                    <Link to="/register">
+                        Create Account
+                    </Link>
+
+                </div>
+
+
+                {/* ================================
+                    FOOTER
+                ================================= */}
+
+                <div className="login-footer">
+
+                    <span>
+                        © 2026 Livora Inc.
+                    </span>
+
+
+                    <span>
+                        Help Center
+                    </span>
+
+
+                    <span>
+                        English (US)
+                    </span>
+
+                </div>
 
 
             </div>
 
-
-
-
         </div>
 
-
-
     );
-
-
 }
 
 
