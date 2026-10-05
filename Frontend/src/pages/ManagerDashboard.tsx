@@ -1,304 +1,268 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Dashboard.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/ManagerDashboard.css";
 
-interface MaintenanceRequest {
-    id: number;
+interface Request {
+    id: string;
     category: string;
     resident: string;
     unit: string;
     priority: string;
-    technician: string;
     status: string;
+    date: string;
 }
 
 function ManagerDashboard() {
 
-    const [activePage, setActivePage] = useState("dashboard");
+    const navigate = useNavigate();
 
-    const [requests, setRequests] = useState<MaintenanceRequest[]>([
+    const [search, setSearch] = useState("");
+
+    const requests: Request[] = [
         {
-            id: 1001,
-            category: "Plumbing",
-            resident: "John Doe",
+            id: "#1001",
+            category: "Plumbing Issue",
+            resident: "John Resident",
             unit: "A-204",
             priority: "High",
-            technician: "Mike Kumar",
             status: "In Progress",
+            date: "05 Oct 2026"
         },
         {
-            id: 1002,
-            category: "Electrical",
-            resident: "Sarah Smith",
+            id: "#1002",
+            category: "Electrical Issue",
+            resident: "Sarah Perera",
             unit: "B-102",
             priority: "Medium",
-            technician: "David Silva",
             status: "Completed",
+            date: "04 Oct 2026"
         },
         {
-            id: 1003,
+            id: "#1003",
             category: "Maintenance",
-            resident: "David Perera",
+            resident: "David Fernando",
             unit: "C-305",
-            priority: "Low",
-            technician: "Not Assigned",
+            priority: "High",
             status: "Pending",
+            date: "03 Oct 2026"
         },
         {
-            id: 1004,
+            id: "#1004",
             category: "Air Conditioning",
-            resident: "Nimal Fernando",
-            unit: "A-105",
-            priority: "Urgent",
-            technician: "Mike Kumar",
+            resident: "Nimal Silva",
+            unit: "A-101",
+            priority: "Low",
             status: "In Progress",
-        },
-    ]);
-
-    const technicians = [
-        {
-            name: "Mike Kumar",
-            speciality: "Electrical",
-            availability: "Available",
-            jobs: 5,
-        },
-        {
-            name: "David Silva",
-            speciality: "Plumbing",
-            availability: "Busy",
-            jobs: 8,
-        },
-        {
-            name: "Kasun Perera",
-            speciality: "AC Maintenance",
-            availability: "Available",
-            jobs: 3,
-        },
+            date: "02 Oct 2026"
+        }
     ];
 
-    const residents = [
-        {
-            name: "John Doe",
-            unit: "A-204",
-            requests: 4,
-        },
-        {
-            name: "Sarah Smith",
-            unit: "B-102",
-            requests: 2,
-        },
-        {
-            name: "David Perera",
-            unit: "C-305",
-            requests: 5,
-        },
-    ];
+    const filteredRequests = requests.filter((request) =>
+        `${request.id} ${request.category} ${request.resident} ${request.unit}`
+            .toLowerCase()
+            .includes(search.toLowerCase())
+    );
 
-    const totalRequests = requests.length;
-
-    const pendingRequests = requests.filter(
-        (request) => request.status === "Pending"
-    ).length;
-
-    const activeRequests = requests.filter(
-        (request) => request.status === "In Progress"
-    ).length;
-
-    const completedRequests = requests.filter(
-        (request) => request.status === "Completed"
-    ).length;
-
-
-    const changePriority = (
-        id: number,
-        priority: string
-    ) => {
-
-        setRequests(
-            requests.map((request) =>
-                request.id === id
-                    ? { ...request, priority }
-                    : request
-            )
-        );
+    const logout = () => {
+        navigate("/login");
     };
-
-
-    const assignTechnician = (
-        id: number,
-        technician: string
-    ) => {
-
-        setRequests(
-            requests.map((request) =>
-                request.id === id
-                    ? {
-                        ...request,
-                        technician,
-                        status:
-                            technician === "Not Assigned"
-                                ? "Pending"
-                                : "Assigned",
-                    }
-                    : request
-            )
-        );
-    };
-
 
     return (
 
-        <div className="dashboard-page">
+        <div className="manager-dashboard">
 
-            {/* SIDEBAR */}
+            {/* =====================================================
+                SIDEBAR
+            ===================================================== */}
 
-            <aside className="dashboard-sidebar">
+            <aside className="manager-sidebar">
 
-                <div className="dashboard-logo">
-                    <img src="/livoralogo.png" />
+                <div className="manager-logo">
+
+                    <img
+                        src="/livoralogo.png"
+                        alt="Livora Logo"
+                    />
+
                 </div>
 
-                <div className="user-role">
-                    👨‍💼
-                    <span>Manager</span>
+
+                {/* PROFILE */}
+
+                <div className="manager-profile">
+
+                    <div className="manager-avatar">
+                        AM
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Alex Manager
+                        </h3>
+
+                        <p>
+                            Apartment Manager
+                        </p>
+
+                    </div>
+
                 </div>
 
 
-                <nav className="dashboard-menu">
+                {/* NAVIGATION */}
 
-                    <button
-                        className={
-                            activePage === "dashboard"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("dashboard")
-                        }
-                    >
-                        📊 Dashboard
+                <nav className="manager-nav">
+
+                    <button className="manager-nav-item active">
+
+                        <span>⌂</span>
+
+                        Dashboard
+
                     </button>
 
 
-                    <button
-                        className={
-                            activePage === "requests"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("requests")
-                        }
-                    >
-                        📋 Maintenance Requests
+                    <button className="manager-nav-item">
+
+                        <span>📋</span>
+
+                        Requests
+
+                        <b className="manager-nav-badge">
+                            4
+                        </b>
+
                     </button>
 
 
-                    <button
-                        className={
-                            activePage === "technicians"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("technicians")
-                        }
-                    >
-                        🔧 Technicians
+                    <button className="manager-nav-item">
+
+                        <span>👥</span>
+
+                        Residents
+
                     </button>
 
 
-                    <button
-                        className={
-                            activePage === "residents"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("residents")
-                        }
-                    >
-                        🏠 Residents
+                    <button className="manager-nav-item">
+
+                        <span>🔧</span>
+
+                        Technicians
+
                     </button>
 
 
-                    <button
-                        className={
-                            activePage === "reports"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("reports")
-                        }
-                    >
-                        📈 Reports & Analytics
+                    <button className="manager-nav-item">
+
+                        <span>🔔</span>
+
+                        Notifications
+
+                        <b className="manager-nav-badge notification">
+                            3
+                        </b>
+
                     </button>
 
 
-                    <button
-                        className={
-                            activePage === "notifications"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("notifications")
-                        }
-                    >
-                        🔔 Notifications
-                    </button>
+                    <button className="manager-nav-item">
 
+                        <span>👤</span>
 
-                    <button
-                        className={
-                            activePage === "profile"
-                                ? "active"
-                                : ""
-                        }
-                        onClick={() =>
-                            setActivePage("profile")
-                        }
-                    >
-                        👤 Profile
+                        Profile
+
                     </button>
 
                 </nav>
 
 
-                <Link
-                    to="/"
-                    className="dashboard-logout"
-                >
-                    ← Back to Home
-                </Link>
+                {/* BOTTOM */}
+
+                <div className="manager-sidebar-bottom">
+
+                    <button
+                        onClick={() => navigate("/")}
+                    >
+                        ← Back to Home
+                    </button>
+
+                    <button onClick={logout}>
+                        ⇥ Logout
+                    </button>
+
+                </div>
 
             </aside>
 
 
-            {/* MAIN */}
+            {/* =====================================================
+                MAIN
+            ===================================================== */}
 
-            <main className="dashboard-main">
+            <main className="manager-main">
 
-                <header className="dashboard-header">
 
-                    <div>
-                        <h1>Manager Dashboard</h1>
-                        <p>
-                            Monitor and manage apartment maintenance.
-                        </p>
+                {/* =====================================================
+                    TOP BAR
+                ===================================================== */}
+
+                <header className="manager-topbar">
+
+                    <div className="manager-search">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            placeholder="Search requests, residents, technicians..."
+                            value={search}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
+                        />
+
                     </div>
 
 
-                    <div className="header-profile">
+                    <div className="manager-top-right">
 
-                        <div className="profile-avatar">
-                            AM
+                        <div className="manager-notification">
+
+                            🔔
+
+                            <span>
+                                3
+                            </span>
+
                         </div>
 
-                        <div>
-                            <strong>Alex Manager</strong>
-                            <span>Apartment Manager</span>
+
+                        <div className="manager-user">
+
+                            <div className="manager-user-avatar">
+                                AM
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Alex Manager
+                                </strong>
+
+                                <small>
+                                    Apartment Manager
+                                </small>
+
+                            </div>
+
+                            <span>
+                                ▾
+                            </span>
+
                         </div>
 
                     </div>
@@ -306,128 +270,335 @@ function ManagerDashboard() {
                 </header>
 
 
-                {/* DASHBOARD */}
+                {/* =====================================================
+                    PAGE CONTENT
+                ===================================================== */}
 
-                {activePage === "dashboard" && (
+                <div className="manager-content">
 
-                    <>
 
-                        <section className="dashboard-stats">
+                    {/* =================================================
+                        HERO
+                    ================================================= */}
 
-                            <div className="dashboard-stat blue">
+                    <section className="manager-hero">
 
-                                <span>📋</span>
+                        <div className="manager-hero-overlay"></div>
 
-                                <div>
-                                    <h2>{totalRequests}</h2>
-                                    <p>Total Requests</p>
-                                </div>
+                        <div className="manager-hero-content">
+
+                            <span className="manager-welcome">
+                                WELCOME BACK
+                            </span>
+
+                            <h1>
+                                Manage your apartment
+                                <br />
+                                community with ease 🏢
+                            </h1>
+
+                            <p>
+                                Monitor maintenance requests,
+                                manage residents and technicians,
+                                and keep your community running smoothly.
+                            </p>
+
+                            <button
+                                onClick={() => {
+                                    document
+                                        .getElementById("maintenance-requests")
+                                        ?.scrollIntoView({
+                                            behavior: "smooth"
+                                        });
+                                }}
+                            >
+                                📋 View Requests
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    {/* =================================================
+                        STATISTICS
+                    ================================================= */}
+
+                    <section className="manager-stats">
+
+
+                        {/* TOTAL */}
+
+                        <div className="manager-stat-card blue">
+
+                            <div className="manager-stat-icon">
+                                📋
+                            </div>
+
+                            <div className="manager-stat-info">
+
+                                <span>
+                                    Total Requests
+                                </span>
+
+                                <strong>
+                                    4
+                                </strong>
+
+                                <small>
+                                    This month
+                                </small>
 
                             </div>
 
+                            <div className="manager-mini-chart">
+                                ╱╲╱╲
+                            </div>
 
-                            <div className="dashboard-stat orange">
+                        </div>
 
-                                <span>⏳</span>
 
-                                <div>
-                                    <h2>{pendingRequests}</h2>
-                                    <p>Pending Requests</p>
-                                </div>
+                        {/* PENDING */}
+
+                        <div className="manager-stat-card yellow">
+
+                            <div className="manager-stat-icon">
+                                ⏳
+                            </div>
+
+                            <div className="manager-stat-info">
+
+                                <span>
+                                    Pending
+                                </span>
+
+                                <strong>
+                                    1
+                                </strong>
+
+                                <small>
+                                    Needs attention
+                                </small>
 
                             </div>
 
+                            <div className="manager-mini-chart">
+                                ╱╲╱╲
+                            </div>
 
-                            <div className="dashboard-stat purple">
+                        </div>
 
-                                <span>🔧</span>
 
-                                <div>
-                                    <h2>{activeRequests}</h2>
-                                    <p>Active Requests</p>
-                                </div>
+                        {/* IN PROGRESS */}
+
+                        <div className="manager-stat-card purple">
+
+                            <div className="manager-stat-icon">
+                                🔧
+                            </div>
+
+                            <div className="manager-stat-info">
+
+                                <span>
+                                    In Progress
+                                </span>
+
+                                <strong>
+                                    2
+                                </strong>
+
+                                <small>
+                                    Being handled
+                                </small>
 
                             </div>
 
+                            <div className="manager-mini-chart">
+                                ╱╲╱╲
+                            </div>
 
-                            <div className="dashboard-stat green">
+                        </div>
 
-                                <span>✓</span>
 
-                                <div>
-                                    <h2>{completedRequests}</h2>
-                                    <p>Completed</p>
-                                </div>
+                        {/* COMPLETED */}
+
+                        <div className="manager-stat-card green">
+
+                            <div className="manager-stat-icon">
+                                ✓
+                            </div>
+
+                            <div className="manager-stat-info">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong>
+                                    1
+                                </strong>
+
+                                <small>
+                                    This month
+                                </small>
 
                             </div>
 
-                        </section>
-
-
-                        <section className="dashboard-stats second-stats">
-
-                            <div className="mini-stat">
-                                <span>🏠</span>
-                                <div>
-                                    <h2>128</h2>
-                                    <p>Residents</p>
-                                </div>
+                            <div className="manager-mini-chart">
+                                ╱╲╱╲
                             </div>
 
-                            <div className="mini-stat">
-                                <span>🔧</span>
-                                <div>
-                                    <h2>15</h2>
-                                    <p>Technicians</p>
-                                </div>
+                        </div>
+
+                    </section>
+
+
+                    {/* =================================================
+                        SECONDARY STATISTICS
+                    ================================================= */}
+
+                    <section className="manager-small-stats">
+
+                        <div className="manager-small-card">
+
+                            <div className="small-icon residents">
+                                👥
                             </div>
 
-                            <div className="mini-stat">
-                                <span>⏱️</span>
-                                <div>
-                                    <h2>2.4 Days</h2>
-                                    <p>Average Completion</p>
-                                </div>
+                            <div>
+
+                                <strong>
+                                    120
+                                </strong>
+
+                                <span>
+                                    Residents
+                                </span>
+
                             </div>
 
-                        </section>
+                        </div>
 
 
-                        <section className="dashboard-panel large-panel">
+                        <div className="manager-small-card">
 
-                            <div className="panel-header">
+                            <div className="small-icon technicians">
+                                🔧
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    15
+                                </strong>
+
+                                <span>
+                                    Technicians
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="manager-small-card">
+
+                            <div className="small-icon completion">
+                                ⏱
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    2.4 Days
+                                </strong>
+
+                                <span>
+                                    Average Completion
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    {/* =================================================
+                        LOWER SECTION
+                    ================================================= */}
+
+                    <section className="manager-lower-grid">
+
+
+                        {/* =================================================
+                            RECENT REQUESTS
+                        ================================================= */}
+
+                        <div
+                            className="manager-requests-card"
+                            id="maintenance-requests"
+                        >
+
+                            <div className="manager-section-header">
 
                                 <div>
-                                    <h2>Recent Maintenance Requests</h2>
+
+                                    <h2>
+                                        📋 Recent Maintenance Requests
+                                    </h2>
+
                                     <p>
-                                        Monitor the latest requests.
+                                        Monitor the latest maintenance requests.
                                     </p>
+
                                 </div>
 
-                                <button
-                                    onClick={() =>
-                                        setActivePage("requests")
-                                    }
-                                >
-                                    View All
+                                <button>
+                                    View All →
                                 </button>
 
                             </div>
 
 
-                            <div className="table-wrapper">
+                            <div className="manager-table-wrapper">
 
-                                <table>
+                                <table className="manager-table">
 
                                     <thead>
 
                                         <tr>
+
                                             <th>ID</th>
-                                            <th>Category</th>
-                                            <th>Resident</th>
-                                            <th>Priority</th>
-                                            <th>Technician</th>
-                                            <th>Status</th>
+
+                                            <th>
+                                                Request Details
+                                            </th>
+
+                                            <th>
+                                                Resident
+                                            </th>
+
+                                            <th>
+                                                Unit
+                                            </th>
+
+                                            <th>
+                                                Priority
+                                            </th>
+
+                                            <th>
+                                                Status
+                                            </th>
+
+                                            <th>
+                                                Date
+                                            </th>
+
+                                            <th>
+                                                Action
+                                            </th>
+
                                         </tr>
 
                                     </thead>
@@ -435,38 +606,93 @@ function ManagerDashboard() {
 
                                     <tbody>
 
-                                        {requests.map((request) => (
+                                        {filteredRequests.map((request) => (
 
                                             <tr key={request.id}>
 
                                                 <td>
-                                                    #{request.id}
+                                                    <strong>
+                                                        {request.id}
+                                                    </strong>
                                                 </td>
 
+
                                                 <td>
-                                                    {request.category}
+
+                                                    <div className="manager-request-detail">
+
+                                                        <div className="manager-request-icon">
+
+                                                            {request.category.includes("Electrical")
+                                                                ? "💡"
+                                                                : request.category.includes("Plumbing")
+                                                                ? "🔧"
+                                                                : "🛠️"}
+
+                                                        </div>
+
+                                                        <div>
+
+                                                            <strong>
+                                                                {request.category}
+                                                            </strong>
+
+                                                            <small>
+                                                                Maintenance request
+                                                            </small>
+
+                                                        </div>
+
+                                                    </div>
+
                                                 </td>
+
 
                                                 <td>
                                                     {request.resident}
                                                 </td>
 
-                                                <td>
-                                                    {request.priority}
-                                                </td>
 
                                                 <td>
-                                                    {request.technician}
+                                                    {request.unit}
                                                 </td>
 
+
                                                 <td>
+
                                                     <span
-                                                        className={`status ${request.status
+                                                        className={`manager-priority ${request.priority.toLowerCase()}`}
+                                                    >
+                                                        {request.priority}
+                                                    </span>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <span
+                                                        className={`manager-status ${request.status
                                                             .toLowerCase()
                                                             .replace(" ", "-")}`}
                                                     >
                                                         {request.status}
                                                     </span>
+
+                                                </td>
+
+
+                                                <td>
+                                                    {request.date}
+                                                </td>
+
+
+                                                <td>
+
+                                                    <button className="manager-view-btn">
+                                                        View
+                                                    </button>
+
                                                 </td>
 
                                             </tr>
@@ -479,548 +705,284 @@ function ManagerDashboard() {
 
                             </div>
 
-                        </section>
-
-                    </>
-                )}
+                        </div>
 
 
-                {/* MAINTENANCE REQUESTS */}
+                        {/* =================================================
+                            RIGHT COLUMN
+                        ================================================= */}
 
-                {activePage === "requests" && (
+                        <div className="manager-right-column">
 
-                    <section className="dashboard-panel large-panel">
 
-                        <div className="panel-header">
+                            {/* QUICK ACTIONS */}
 
-                            <div>
-                                <h2>Manage Maintenance Requests</h2>
-                                <p>
-                                    Review, assign and monitor requests.
-                                </p>
+                            <div className="manager-side-card">
+
+                                <h2>
+                                    ⚡ Quick Actions
+                                </h2>
+
+
+                                <button className="manager-action">
+
+                                    <span className="action-icon blue-action">
+                                        📋
+                                    </span>
+
+                                    <span>
+                                        Manage Requests
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="manager-action">
+
+                                    <span className="action-icon purple-action">
+                                        👥
+                                    </span>
+
+                                    <span>
+                                        Manage Residents
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="manager-action">
+
+                                    <span className="action-icon green-action">
+                                        🔧
+                                    </span>
+
+                                    <span>
+                                        Manage Technicians
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="manager-action">
+
+                                    <span className="action-icon orange-action">
+                                        🔔
+                                    </span>
+
+                                    <span>
+                                        Notifications
+                                    </span>
+
+                                    <b className="manager-action-badge">
+                                        3
+                                    </b>
+
+                                </button>
+
                             </div>
 
-                        </div>
+
+                            {/* =================================================
+                                TECHNICIAN OVERVIEW
+                            ================================================= */}
+
+                            <div className="manager-side-card">
+
+                                <div className="manager-side-title">
+
+                                    <h2>
+                                        🔧 Technician Overview
+                                    </h2>
+
+                                    <a href="#">
+                                        View All
+                                    </a>
+
+                                </div>
 
 
-                        <div className="table-wrapper">
+                                <div className="technician-row">
 
-                            <table>
+                                    <div className="technician-avatar">
+                                        MK
+                                    </div>
 
-                                <thead>
+                                    <div className="technician-info">
 
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Category</th>
-                                        <th>Resident</th>
-                                        <th>Unit</th>
-                                        <th>Priority</th>
-                                        <th>Technician</th>
-                                        <th>Status</th>
-                                    </tr>
+                                        <strong>
+                                            Mike Kumar
+                                        </strong>
 
-                                </thead>
+                                        <small>
+                                            Electrical Technician
+                                        </small>
 
+                                    </div>
 
-                                <tbody>
+                                    <span className="available">
+                                        Available
+                                    </span>
 
-                                    {requests.map((request) => (
-
-                                        <tr key={request.id}>
-
-                                            <td>
-                                                #{request.id}
-                                            </td>
-
-                                            <td>
-                                                {request.category}
-                                            </td>
-
-                                            <td>
-                                                {request.resident}
-                                            </td>
-
-                                            <td>
-                                                {request.unit}
-                                            </td>
-
-                                            <td>
-
-                                                <select
-                                                    value={request.priority}
-                                                    onChange={(e) =>
-                                                        changePriority(
-                                                            request.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                >
-
-                                                    <option>
-                                                        Low
-                                                    </option>
-
-                                                    <option>
-                                                        Medium
-                                                    </option>
-
-                                                    <option>
-                                                        High
-                                                    </option>
-
-                                                    <option>
-                                                        Urgent
-                                                    </option>
-
-                                                </select>
-
-                                            </td>
+                                </div>
 
 
-                                            <td>
+                                <div className="technician-row">
 
-                                                <select
-                                                    value={request.technician}
-                                                    onChange={(e) =>
-                                                        assignTechnician(
-                                                            request.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                >
+                                    <div className="technician-avatar">
+                                        SP
+                                    </div>
 
-                                                    <option>
-                                                        Not Assigned
-                                                    </option>
+                                    <div className="technician-info">
 
-                                                    {technicians.map(
-                                                        (technician) => (
-                                                            <option
-                                                                key={
-                                                                    technician.name
-                                                                }
-                                                            >
-                                                                {
-                                                                    technician.name
-                                                                }
-                                                            </option>
-                                                        )
-                                                    )}
+                                        <strong>
+                                            Sam Perera
+                                        </strong>
 
-                                                </select>
+                                        <small>
+                                            Plumbing Technician
+                                        </small>
 
-                                            </td>
+                                    </div>
+
+                                    <span className="busy">
+                                        Busy
+                                    </span>
+
+                                </div>
 
 
-                                            <td>
+                                <div className="technician-row">
 
-                                                <span
-                                                    className={`status ${request.status
-                                                        .toLowerCase()
-                                                        .replace(" ", "-")}`}
-                                                >
-                                                    {request.status}
-                                                </span>
+                                    <div className="technician-avatar">
+                                        DK
+                                    </div>
 
-                                            </td>
+                                    <div className="technician-info">
 
-                                        </tr>
+                                        <strong>
+                                            David Kumar
+                                        </strong>
 
-                                    ))}
+                                        <small>
+                                            General Maintenance
+                                        </small>
 
-                                </tbody>
+                                    </div>
 
-                            </table>
+                                    <span className="available">
+                                        Available
+                                    </span>
 
-                        </div>
+                                </div>
 
-                    </section>
-                )}
-
-
-                {/* TECHNICIANS */}
-
-                {activePage === "technicians" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-
-                            <div>
-                                <h2>Manage Technicians</h2>
-                                <p>
-                                    View technician availability and workload.
-                                </p>
                             </div>
 
-                        </div>
+
+                            {/* =================================================
+                                NOTIFICATIONS
+                            ================================================= */}
+
+                            <div className="manager-side-card">
+
+                                <h2>
+                                    🔔 Recent Notifications
+                                </h2>
 
 
-                        <div className="people-grid">
+                                <div className="manager-notification-item">
 
-                            {technicians.map((technician) => (
+                                    <div className="notification-icon blue-notification">
+                                        📋
+                                    </div>
 
-                                <div
-                                    className="person-card"
-                                    key={technician.name}
-                                >
+                                    <div>
 
-                                    <div className="person-avatar">
+                                        <strong>
+                                            New Request
+                                        </strong>
+
+                                        <p>
+                                            A new plumbing request
+                                            has been submitted.
+                                        </p>
+
+                                        <small>
+                                            1 hour ago
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="manager-notification-item">
+
+                                    <div className="notification-icon purple-notification">
                                         🔧
                                     </div>
 
-                                    <h3>
-                                        {technician.name}
-                                    </h3>
-
-                                    <p>
-                                        {technician.speciality}
-                                    </p>
-
-                                    <span
-                                        className={
-                                            technician.availability ===
-                                                "Available"
-                                                ? "availability-badge available"
-                                                : "availability-badge busy"
-                                        }
-                                    >
-                                        {technician.availability}
-                                    </span>
-
-                                    <div className="workload">
-                                        <span>Assigned Jobs</span>
-                                        <strong>
-                                            {technician.jobs}
-                                        </strong>
-                                    </div>
-
-                                    <button className="primary-dashboard-btn">
-                                        Assign Job
-                                    </button>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    </section>
-                )}
-
-
-                {/* RESIDENTS */}
-
-                {activePage === "residents" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-
-                            <div>
-                                <h2>Manage Residents</h2>
-                                <p>
-                                    View residents and their maintenance requests.
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <div className="people-grid">
-
-                            {residents.map((resident) => (
-
-                                <div
-                                    className="person-card"
-                                    key={resident.name}
-                                >
-
-                                    <div className="person-avatar">
-                                        🏠
-                                    </div>
-
-                                    <h3>
-                                        {resident.name}
-                                    </h3>
-
-                                    <p>
-                                        Apartment {resident.unit}
-                                    </p>
-
-                                    <div className="workload">
-
-                                        <span>
-                                            Maintenance Requests
-                                        </span>
+                                    <div>
 
                                         <strong>
-                                            {resident.requests}
+                                            Job Completed
                                         </strong>
+
+                                        <p>
+                                            Request #1002 was completed.
+                                        </p>
+
+                                        <small>
+                                            4 hours ago
+                                        </small>
 
                                     </div>
 
-                                    <button className="secondary-dashboard-btn">
-                                        View Requests
-                                    </button>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    </section>
-                )}
-
-
-                {/* REPORTS */}
-
-                {activePage === "reports" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-
-                            <div>
-                                <h2>Reports & Analytics</h2>
-                                <p>
-                                    Monitor maintenance performance.
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <div className="analytics-grid">
-
-                            <div className="analytics-card">
-                                <h3>Requests by Category</h3>
-
-                                <div className="progress-row">
-                                    <span>Plumbing</span>
-                                    <strong>42%</strong>
-                                </div>
-
-                                <div className="progress">
-                                    <div style={{ width: "42%" }}></div>
                                 </div>
 
 
-                                <div className="progress-row">
-                                    <span>Electrical</span>
-                                    <strong>28%</strong>
+                                <div className="manager-notification-item">
+
+                                    <div className="notification-icon orange-notification">
+                                        ⚠️
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            High Priority
+                                        </strong>
+
+                                        <p>
+                                            Request #1003 requires attention.
+                                        </p>
+
+                                        <small>
+                                            Yesterday
+                                        </small>
+
+                                    </div>
+
                                 </div>
-
-                                <div className="progress">
-                                    <div style={{ width: "28%" }}></div>
-                                </div>
-
-
-                                <div className="progress-row">
-                                    <span>Maintenance</span>
-                                    <strong>30%</strong>
-                                </div>
-
-                                <div className="progress">
-                                    <div style={{ width: "30%" }}></div>
-                                </div>
-
-                            </div>
-
-
-                            <div className="analytics-card">
-
-                                <h3>Request Status</h3>
-
-                                <div className="analytics-number">
-                                    <strong>68%</strong>
-                                    <span>Completed</span>
-                                </div>
-
-                                <div className="analytics-number">
-                                    <strong>22%</strong>
-                                    <span>In Progress</span>
-                                </div>
-
-                                <div className="analytics-number">
-                                    <strong>10%</strong>
-                                    <span>Pending</span>
-                                </div>
-
-                            </div>
-
-
-                            <div className="analytics-card">
-
-                                <h3>Technician Workload</h3>
-
-                                <div className="workload-bar">
-                                    <span>Mike Kumar</span>
-                                    <strong>5 Jobs</strong>
-                                </div>
-
-                                <div className="workload-bar">
-                                    <span>David Silva</span>
-                                    <strong>8 Jobs</strong>
-                                </div>
-
-                                <div className="workload-bar">
-                                    <span>Kasun Perera</span>
-                                    <strong>3 Jobs</strong>
-                                </div>
-
-                            </div>
-
-
-                            <div className="analytics-card">
-
-                                <h3>Average Completion Time</h3>
-
-                                <div className="big-number">
-                                    2.4
-                                    <span>Days</span>
-                                </div>
-
-                                <p>
-                                    Average time required to complete a
-                                    maintenance request.
-                                </p>
 
                             </div>
 
                         </div>
 
                     </section>
-                )}
 
-
-                {/* NOTIFICATIONS */}
-
-                {activePage === "notifications" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-                            <h2>Notifications</h2>
-                        </div>
-
-
-                        <div className="notification-list">
-
-                            <div className="notification">
-                                <span>🆕</span>
-                                <div>
-                                    <strong>
-                                        New maintenance request
-                                    </strong>
-                                    <p>
-                                        Request #1006 has been submitted.
-                                    </p>
-                                </div>
-                            </div>
-
-
-                            <div className="notification">
-                                <span>⚠️</span>
-                                <div>
-                                    <strong>
-                                        High-priority issue
-                                    </strong>
-                                    <p>
-                                        Request #1004 requires attention.
-                                    </p>
-                                </div>
-                            </div>
-
-
-                            <div className="notification">
-                                <span>⏰</span>
-                                <div>
-                                    <strong>
-                                        Delayed job
-                                    </strong>
-                                    <p>
-                                        Request #1001 has exceeded its expected
-                                        completion time.
-                                    </p>
-                                </div>
-                            </div>
-
-
-                            <div className="notification">
-                                <span>✓</span>
-                                <div>
-                                    <strong>
-                                        Job completed
-                                    </strong>
-                                    <p>
-                                        Request #1002 has been completed.
-                                    </p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </section>
-                )}
-
-
-                {/* PROFILE */}
-
-                {activePage === "profile" && (
-
-                    <section className="dashboard-panel profile-panel">
-
-                        <h2>Manager Profile</h2>
-
-                        <div className="profile-form">
-
-                            <div className="form-group">
-                                <label>Name</label>
-                                <input
-                                    value="Alex Manager"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email</label>
-                                <input
-                                    value="manager@livora.com"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Role</label>
-                                <input
-                                    value="Apartment Manager"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Contact Information</label>
-                                <input
-                                    value="+94 71 234 5678"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Password</label>
-                                <input
-                                    type="password"
-                                    value="password123"
-                                    readOnly
-                                />
-                            </div>
-
-                        </div>
-
-                    </section>
-                )}
+                </div>
 
             </main>
 

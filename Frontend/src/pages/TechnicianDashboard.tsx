@@ -1,166 +1,251 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Dashboard.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/TechnicianDashboard.css";
 
 interface Job {
-    id: number;
+    id: string;
     category: string;
     resident: string;
     unit: string;
-    problem: string;
     priority: string;
     status: string;
+    date: string;
 }
 
 function TechnicianDashboard() {
 
-    const [activePage, setActivePage] = useState("dashboard");
+    const navigate = useNavigate();
 
-    const [availability, setAvailability] = useState("Available");
+    const [search, setSearch] = useState("");
 
-    const [jobs, setJobs] = useState<Job[]>([
+    const jobs: Job[] = [
         {
-            id: 1001,
+            id: "#1001",
             category: "Plumbing",
-            resident: "John Doe",
+            resident: "John Resident",
             unit: "A-204",
-            problem: "Water leakage in bathroom",
             priority: "High",
             status: "Assigned",
+            date: "05 Oct 2026"
         },
         {
-            id: 1004,
+            id: "#1002",
             category: "Electrical",
-            resident: "Sarah Smith",
+            resident: "Sarah Perera",
             unit: "B-102",
-            problem: "Bedroom light not working",
             priority: "Medium",
             status: "In Progress",
+            date: "06 Oct 2026"
         },
         {
-            id: 1005,
+            id: "#1003",
             category: "Maintenance",
-            resident: "David Perera",
+            resident: "David Fernando",
             unit: "C-305",
-            problem: "Door lock repair",
+            priority: "High",
+            status: "In Progress",
+            date: "07 Oct 2026"
+        },
+        {
+            id: "#1004",
+            category: "Air Conditioning",
+            resident: "Nimal Silva",
+            unit: "A-101",
             priority: "Low",
             status: "Completed",
+            date: "02 Oct 2026"
         },
-    ]);
+        {
+            id: "#1005",
+            category: "Maintenance",
+            resident: "Kasun Perera",
+            unit: "B-210",
+            priority: "Medium",
+            status: "Pending",
+            date: "08 Oct 2026"
+        }
+    ];
 
-    const updateStatus = (id: number, status: string) => {
+    const filteredJobs = jobs.filter((job) =>
+        `${job.id} ${job.category} ${job.resident} ${job.unit}`
+            .toLowerCase()
+            .includes(search.toLowerCase())
+    );
 
-        setJobs(
-            jobs.map((job) =>
-                job.id === id
-                    ? { ...job, status }
-                    : job
-            )
-        );
+    const logout = () => {
+        navigate("/login");
     };
-
-    const assignedJobs = jobs.filter(
-        (job) => job.status === "Assigned"
-    ).length;
-
-    const pendingJobs = jobs.filter(
-        (job) => job.status === "Accepted"
-    ).length;
-
-    const inProgressJobs = jobs.filter(
-        (job) => job.status === "In Progress"
-    ).length;
-
-    const completedJobs = jobs.filter(
-        (job) => job.status === "Completed"
-    ).length;
 
     return (
 
-        <div className="dashboard-page">
+        <div className="technician-dashboard">
 
-            {/* SIDEBAR */}
+            {/* =================================================
+                SIDEBAR
+            ================================================= */}
 
-            <aside className="dashboard-sidebar">
+            <aside className="tech-sidebar">
 
-                <div className="dashboard-logo">
-                    <img src="/livoralogo.png" />
+                <div className="tech-logo">
+                    <img
+                        src="/livoralogo.png"
+                        alt="Livora"
+                    />
                 </div>
 
-                <div className="user-role">
-                    🔧
-                    <span>Technician</span>
+                <div className="tech-profile">
+
+                    <div className="tech-avatar">
+                        MK
+                    </div>
+
+                    <div>
+                        <h3>Mike Kumar</h3>
+
+                        <p>Electrical Technician</p>
+                    </div>
+
                 </div>
 
-                <nav className="dashboard-menu">
 
-                    <button
-                        className={activePage === "dashboard" ? "active" : ""}
-                        onClick={() => setActivePage("dashboard")}
-                    >
-                        📊 Dashboard
+                {/* NAVIGATION */}
+
+                <nav className="tech-nav">
+
+                    <button className="tech-nav-item active">
+
+                        <span>⌂</span>
+
+                        Dashboard
+
                     </button>
 
-                    <button
-                        className={activePage === "jobs" ? "active" : ""}
-                        onClick={() => setActivePage("jobs")}
-                    >
-                        🔧 My Assigned Jobs
+
+                    <button className="tech-nav-item">
+
+                        <span>🔧</span>
+
+                        My Jobs
+
                     </button>
 
-                    <button
-                        className={activePage === "availability" ? "active" : ""}
-                        onClick={() => setActivePage("availability")}
-                    >
-                        🟢 Availability
+
+                    <button className="tech-nav-item">
+
+                        <span>📅</span>
+
+                        Calendar
+
                     </button>
 
-                    <button
-                        className={activePage === "notifications" ? "active" : ""}
-                        onClick={() => setActivePage("notifications")}
-                    >
-                        🔔 Notifications
+
+                    <button className="tech-nav-item">
+
+                        <span>🔔</span>
+
+                        Notifications
+
+                        <b className="notification-count">
+                            2
+                        </b>
+
                     </button>
 
-                    <button
-                        className={activePage === "profile" ? "active" : ""}
-                        onClick={() => setActivePage("profile")}
-                    >
-                        👤 Profile
+
+                    <button className="tech-nav-item">
+
+                        <span>👤</span>
+
+                        Profile
+
                     </button>
 
                 </nav>
 
-                <Link
-                    to="/"
-                    className="dashboard-logout"
-                >
-                    ← Back to Home
-                </Link>
+
+                <div className="tech-sidebar-bottom">
+
+                    <button
+                        className="tech-home-btn"
+                        onClick={() => navigate("/")}
+                    >
+                        ← Back to Home
+                    </button>
+
+                    <button
+                        className="tech-logout-btn"
+                        onClick={logout}
+                    >
+                        ⇥ Logout
+                    </button>
+
+                </div>
 
             </aside>
 
 
-            {/* MAIN */}
+            {/* =================================================
+                MAIN CONTENT
+            ================================================= */}
 
-            <main className="dashboard-main">
+            <main className="tech-main">
 
-                <header className="dashboard-header">
 
-                    <div>
-                        <h1>Technician Dashboard</h1>
-                        <p>Manage your assigned maintenance jobs.</p>
+                {/* =================================================
+                    TOP BAR
+                ================================================= */}
+
+                <header className="tech-topbar">
+
+                    <div className="tech-search">
+
+                        <span>⌕</span>
+
+                        <input
+                            type="text"
+                            placeholder="Search jobs, residents..."
+                            value={search}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
+                        />
+
                     </div>
 
-                    <div className="header-profile">
 
-                        <div className="profile-avatar">
-                            MK
+                    <div className="tech-top-right">
+
+                        <div className="tech-notification">
+
+                            🔔
+
+                            <span>2</span>
+
                         </div>
 
-                        <div>
-                            <strong>Mike Kumar</strong>
-                            <span>Electrical Technician</span>
+
+                        <div className="tech-user">
+
+                            <div className="tech-user-avatar">
+                                MK
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Mike Kumar
+                                </strong>
+
+                                <small>
+                                    Electrical Technician
+                                </small>
+
+                            </div>
+
+                            <span className="dropdown-arrow">
+                                ▾
+                            </span>
+
                         </div>
 
                     </div>
@@ -168,112 +253,361 @@ function TechnicianDashboard() {
                 </header>
 
 
-                {/* DASHBOARD */}
+                {/* =================================================
+                    CONTENT
+                ================================================= */}
 
-                {activePage === "dashboard" && (
+                <div className="tech-content">
 
-                    <>
 
-                        <section className="dashboard-stats">
+                    {/* =================================================
+                        HERO
+                    ================================================= */}
 
-                            <div className="dashboard-stat blue">
-                                <span>📋</span>
-                                <div>
-                                    <h2>{assignedJobs}</h2>
-                                    <p>Assigned Jobs</p>
-                                </div>
+                    <section className="tech-hero">
+
+                        <div className="tech-hero-overlay"></div>
+
+                        <div className="tech-hero-content">
+
+                            <span className="tech-welcome">
+                                WELCOME BACK
+                            </span>
+
+                            <h1>
+                                Keep maintenance
+                                <br />
+                                running smoothly 🔧
+                            </h1>
+
+                            <p>
+                                Manage your assigned maintenance
+                                jobs and keep apartment services
+                                running efficiently.
+                            </p>
+
+                            <button
+                                onClick={() => {
+                                    document
+                                        .getElementById("assigned-jobs")
+                                        ?.scrollIntoView({
+                                            behavior: "smooth"
+                                        });
+                                }}
+                            >
+                                🔧 View My Jobs
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    {/* =================================================
+                        STAT CARDS
+                    ================================================= */}
+
+                    <section className="tech-stats">
+
+
+                        {/* ASSIGNED */}
+
+                        <div className="tech-stat-card blue">
+
+                            <div className="tech-stat-icon">
+                                📋
                             </div>
 
-                            <div className="dashboard-stat orange">
-                                <span>⏳</span>
-                                <div>
-                                    <h2>{pendingJobs}</h2>
-                                    <p>Pending Jobs</p>
-                                </div>
+                            <div className="tech-stat-info">
+
+                                <span>
+                                    Assigned Jobs
+                                </span>
+
+                                <strong>
+                                    5
+                                </strong>
+
+                                <small>
+                                    +2 this week
+                                </small>
+
                             </div>
 
-                            <div className="dashboard-stat purple">
-                                <span>🔧</span>
-                                <div>
-                                    <h2>{inProgressJobs}</h2>
-                                    <p>Jobs In Progress</p>
-                                </div>
+                            <div className="mini-chart blue-chart">
+                                ╱╲╱╲
                             </div>
 
-                            <div className="dashboard-stat green">
-                                <span>✓</span>
-                                <div>
-                                    <h2>{completedJobs}</h2>
-                                    <p>Completed Jobs</p>
-                                </div>
+                        </div>
+
+
+                        {/* PENDING */}
+
+                        <div className="tech-stat-card yellow">
+
+                            <div className="tech-stat-icon">
+                                ⏳
                             </div>
 
-                        </section>
+                            <div className="tech-stat-info">
+
+                                <span>
+                                    Pending
+                                </span>
+
+                                <strong>
+                                    2
+                                </strong>
+
+                                <small>
+                                    Needs attention
+                                </small>
+
+                            </div>
+
+                            <div className="mini-chart yellow-chart">
+                                ╱╲╱╲
+                            </div>
+
+                        </div>
 
 
-                        <section className="dashboard-panel large-panel">
+                        {/* IN PROGRESS */}
 
-                            <div className="panel-header">
+                        <div className="tech-stat-card purple">
+
+                            <div className="tech-stat-icon">
+                                🔧
+                            </div>
+
+                            <div className="tech-stat-info">
+
+                                <span>
+                                    In Progress
+                                </span>
+
+                                <strong>
+                                    2
+                                </strong>
+
+                                <small>
+                                    Being handled
+                                </small>
+
+                            </div>
+
+                            <div className="mini-chart purple-chart">
+                                ╱╲╱╲
+                            </div>
+
+                        </div>
+
+
+                        {/* COMPLETED */}
+
+                        <div className="tech-stat-card green">
+
+                            <div className="tech-stat-icon">
+                                ✓
+                            </div>
+
+                            <div className="tech-stat-info">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong>
+                                    3
+                                </strong>
+
+                                <small>
+                                    This month
+                                </small>
+
+                            </div>
+
+                            <div className="mini-chart green-chart">
+                                ╱╲╱╲
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    {/* =================================================
+                        LOWER SECTION
+                    ================================================= */}
+
+                    <section className="tech-lower-grid">
+
+
+                        {/* =================================================
+                            ASSIGNED JOBS
+                        ================================================= */}
+
+                        <div
+                            className="assigned-jobs-card"
+                            id="assigned-jobs"
+                        >
+
+                            <div className="section-heading">
 
                                 <div>
-                                    <h2>My Assigned Jobs</h2>
-                                    <p>Maintenance requests assigned to you.</p>
+
+                                    <h2>
+                                        🔧 My Assigned Jobs
+                                    </h2>
+
+                                    <p>
+                                        Maintenance jobs assigned
+                                        to you
+                                    </p>
+
                                 </div>
 
-                                <button
-                                    onClick={() => setActivePage("jobs")}
-                                >
-                                    View All
+                                <button className="view-all-btn">
+                                    View All →
                                 </button>
 
                             </div>
 
 
-                            <div className="table-wrapper">
+                            <div className="jobs-table-wrapper">
 
-                                <table>
+                                <table className="jobs-table">
 
                                     <thead>
 
                                         <tr>
+
                                             <th>ID</th>
-                                            <th>Category</th>
-                                            <th>Resident</th>
-                                            <th>Unit</th>
-                                            <th>Priority</th>
-                                            <th>Status</th>
+
+                                            <th>
+                                                Job Details
+                                            </th>
+
+                                            <th>
+                                                Resident
+                                            </th>
+
+                                            <th>
+                                                Unit
+                                            </th>
+
+                                            <th>
+                                                Priority
+                                            </th>
+
+                                            <th>
+                                                Status
+                                            </th>
+
+                                            <th>
+                                                Date
+                                            </th>
+
+                                            <th>
+                                                Action
+                                            </th>
+
                                         </tr>
 
                                     </thead>
 
+
                                     <tbody>
 
-                                        {jobs.map((job) => (
+                                        {filteredJobs.map((job) => (
 
                                             <tr key={job.id}>
 
-                                                <td>#{job.id}</td>
-
-                                                <td>{job.category}</td>
-
-                                                <td>{job.resident}</td>
-
-                                                <td>{job.unit}</td>
-
                                                 <td>
-                                                    <span className="priority">
-                                                        {job.priority}
-                                                    </span>
+                                                    <strong>
+                                                        {job.id}
+                                                    </strong>
                                                 </td>
 
+
                                                 <td>
+
+                                                    <div className="job-detail">
+
+                                                        <div className="job-icon">
+                                                            {job.category === "Electrical"
+                                                                ? "💡"
+                                                                : job.category === "Plumbing"
+                                                                ? "🔧"
+                                                                : "🛠️"}
+                                                        </div>
+
+                                                        <div>
+
+                                                            <strong>
+                                                                {job.category}
+                                                            </strong>
+
+                                                            <small>
+                                                                Maintenance request
+                                                            </small>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </td>
+
+
+                                                <td>
+                                                    {job.resident}
+                                                </td>
+
+
+                                                <td>
+                                                    {job.unit}
+                                                </td>
+
+
+                                                <td>
+
                                                     <span
-                                                        className={`status ${job.status
-                                                            .toLowerCase()
-                                                            .replace(" ", "-")}`}
+                                                        className={
+                                                            `priority ${job.priority.toLowerCase()}`
+                                                        }
+                                                    >
+                                                        {job.priority}
+                                                    </span>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <span
+                                                        className={
+                                                            `job-status ${job.status
+                                                                .toLowerCase()
+                                                                .replace(" ", "-")}`
+                                                        }
                                                     >
                                                         {job.status}
                                                     </span>
+
+                                                </td>
+
+
+                                                <td>
+                                                    {job.date}
+                                                </td>
+
+
+                                                <td>
+
+                                                    <button className="view-job-btn">
+                                                        View
+                                                    </button>
+
                                                 </td>
 
                                             </tr>
@@ -286,276 +620,248 @@ function TechnicianDashboard() {
 
                             </div>
 
-                        </section>
-
-                    </>
-                )}
-
-
-                {/* JOBS */}
-
-                {activePage === "jobs" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-
-                            <div>
-                                <h2>My Assigned Jobs</h2>
-                                <p>View and update your maintenance jobs.</p>
-                            </div>
-
                         </div>
 
 
-                        <div className="job-cards">
+                        {/* =================================================
+                            RIGHT SIDE
+                        ================================================= */}
 
-                            {jobs.map((job) => (
+                        <div className="tech-right-column">
 
-                                <div className="job-card" key={job.id}>
 
-                                    <div className="job-card-header">
+                            {/* QUICK ACTIONS */}
+
+                            <div className="tech-side-card">
+
+                                <h2>
+                                    ⚡ Quick Actions
+                                </h2>
+
+
+                                <button className="quick-action">
+
+                                    <span className="quick-icon blue-bg">
+                                        🔧
+                                    </span>
+
+                                    <span>
+                                        View My Jobs
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="quick-action">
+
+                                    <span className="quick-icon purple-bg">
+                                        📅
+                                    </span>
+
+                                    <span>
+                                        My Calendar
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="quick-action">
+
+                                    <span className="quick-icon green-bg">
+                                        ✓
+                                    </span>
+
+                                    <span>
+                                        Update Availability
+                                    </span>
+
+                                    <b>
+                                        ›
+                                    </b>
+
+                                </button>
+
+
+                                <button className="quick-action">
+
+                                    <span className="quick-icon orange-bg">
+                                        🔔
+                                    </span>
+
+                                    <span>
+                                        Notifications
+                                    </span>
+
+                                    <b className="quick-notification">
+                                        2
+                                    </b>
+
+                                </button>
+
+                            </div>
+
+
+                            {/* NOTIFICATIONS */}
+
+                            <div className="tech-side-card">
+
+                                <div className="side-title-row">
+
+                                    <h2>
+                                        🔔 Recent Notifications
+                                    </h2>
+
+                                    <a href="#">
+                                        View All
+                                    </a>
+
+                                </div>
+
+
+                                <div className="notification-item">
+
+                                    <div className="notification-icon blue-bg">
+                                        🔧
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            New Job Assigned
+                                        </strong>
+
+                                        <p>
+                                            Plumbing request #1001
+                                            has been assigned to you.
+                                        </p>
+
+                                        <small>
+                                            2 hours ago
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="notification-item">
+
+                                    <div className="notification-icon purple-bg">
+                                        📅
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Job Schedule Updated
+                                        </strong>
+
+                                        <p>
+                                            Electrical job #1002
+                                            is scheduled for tomorrow.
+                                        </p>
+
+                                        <small>
+                                            4 hours ago
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="notification-item">
+
+                                    <div className="notification-icon orange-bg">
+                                        ⚠️
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            High Priority Job
+                                        </strong>
+
+                                        <p>
+                                            Request #1003 requires
+                                            immediate attention.
+                                        </p>
+
+                                        <small>
+                                            Yesterday
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* COMPLETION */}
+
+                            <div className="completion-card">
+
+                                <h2>
+                                    📊 Job Completion Rate
+                                </h2>
+
+                                <div className="completion-content">
+
+                                    <div className="completion-circle">
 
                                         <div>
-                                            <span className="job-id">
-                                                #{job.id}
-                                            </span>
+                                            <strong>
+                                                60%
+                                            </strong>
 
-                                            <h3>
-                                                {job.category}
-                                            </h3>
+                                            <span>
+                                                Completed
+                                            </span>
                                         </div>
 
-                                        <span className="priority">
-                                            {job.priority}
-                                        </span>
-
                                     </div>
 
 
-                                    <p>
-                                        <strong>Resident:</strong>{" "}
-                                        {job.resident}
-                                    </p>
+                                    <div className="completion-details">
 
-                                    <p>
-                                        <strong>Unit:</strong>{" "}
-                                        {job.unit}
-                                    </p>
+                                        <p>
+                                            <span className="dot green-dot"></span>
+                                            Completed
+                                            <strong>3</strong>
+                                        </p>
 
-                                    <p>
-                                        <strong>Problem:</strong>{" "}
-                                        {job.problem}
-                                    </p>
+                                        <p>
+                                            <span className="dot purple-dot"></span>
+                                            In Progress
+                                            <strong>2</strong>
+                                        </p>
 
-
-                                    <div className="job-status-control">
-
-                                        <label>Update Status</label>
-
-                                        <select
-                                            value={job.status}
-                                            onChange={(e) =>
-                                                updateStatus(
-                                                    job.id,
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <option>Assigned</option>
-                                            <option>Accepted</option>
-                                            <option>In Progress</option>
-                                            <option>Completed</option>
-                                        </select>
-
-                                    </div>
-
-
-                                    <div className="work-details">
-
-                                        <h4>Add Work Details</h4>
-
-                                        <textarea
-                                            placeholder="Work performed, materials used, notes..."
-                                        />
-
-                                        <button className="primary-dashboard-btn">
-                                            Save Work Details
-                                        </button>
+                                        <p>
+                                            <span className="dot yellow-dot"></span>
+                                            Pending
+                                            <strong>2</strong>
+                                        </p>
 
                                     </div>
 
                                 </div>
 
-                            ))}
-
-                        </div>
-
-                    </section>
-                )}
-
-
-                {/* AVAILABILITY */}
-
-                {activePage === "availability" && (
-
-                    <section className="dashboard-panel availability-panel">
-
-                        <h2>Update Availability</h2>
-
-                        <p>
-                            Let managers know when you are available for jobs.
-                        </p>
-
-                        <div className="availability-options">
-
-                            <button
-                                className={
-                                    availability === "Available"
-                                        ? "availability active available"
-                                        : "availability available"
-                                }
-                                onClick={() =>
-                                    setAvailability("Available")
-                                }
-                            >
-                                🟢 Available
-                            </button>
-
-                            <button
-                                className={
-                                    availability === "Busy"
-                                        ? "availability active busy"
-                                        : "availability busy"
-                                }
-                                onClick={() =>
-                                    setAvailability("Busy")
-                                }
-                            >
-                                🟠 Busy
-                            </button>
-
-                            <button
-                                className={
-                                    availability === "Unavailable"
-                                        ? "availability active unavailable"
-                                        : "availability unavailable"
-                                }
-                                onClick={() =>
-                                    setAvailability("Unavailable")
-                                }
-                            >
-                                🔴 Unavailable
-                            </button>
-
-                        </div>
-
-                        <div className="current-availability">
-                            Current status:
-                            <strong>{availability}</strong>
-                        </div>
-
-                    </section>
-                )}
-
-
-                {/* NOTIFICATIONS */}
-
-                {activePage === "notifications" && (
-
-                    <section className="dashboard-panel large-panel">
-
-                        <div className="panel-header">
-                            <h2>Notifications</h2>
-                        </div>
-
-                        <div className="notification-list">
-
-                            <div className="notification">
-                                <span>🔧</span>
-
-                                <div>
-                                    <strong>New job assigned</strong>
-                                    <p>
-                                        Job #1001 has been assigned to you.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="notification">
-                                <span>⚠️</span>
-
-                                <div>
-                                    <strong>Urgent request</strong>
-                                    <p>
-                                        Request #1006 requires immediate attention.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="notification">
-                                <span>🔄</span>
-
-                                <div>
-                                    <strong>Job changed</strong>
-                                    <p>
-                                        Request #1004 details have been updated.
-                                    </p>
-                                </div>
                             </div>
 
                         </div>
 
                     </section>
-                )}
 
-
-                {/* PROFILE */}
-
-                {activePage === "profile" && (
-
-                    <section className="dashboard-panel profile-panel">
-
-                        <h2>Technician Profile</h2>
-
-                        <div className="profile-form">
-
-                            <div className="form-group">
-                                <label>Name</label>
-                                <input
-                                    value="Mike Kumar"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email</label>
-                                <input
-                                    value="mike@example.com"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Speciality</label>
-                                <input
-                                    value="Electrical Maintenance"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Contact Information</label>
-                                <input
-                                    value="+94 77 123 4567"
-                                    readOnly
-                                />
-                            </div>
-
-                        </div>
-
-                    </section>
-                )}
+                </div>
 
             </main>
 
