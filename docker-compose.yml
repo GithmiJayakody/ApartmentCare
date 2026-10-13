@@ -1,0 +1,28 @@
+services:
+
+  backend:
+    build:
+      context: ./Backend
+    container_name: livora-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./Backend/.env
+    networks:
+      - livora-network
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: livora-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - livora-network
+
+networks:
+  livora-network:
+    driver: bridge
+    

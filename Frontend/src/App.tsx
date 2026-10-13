@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -43,26 +44,24 @@ function App() {
 
                 {/* ================= RESIDENT DASHBOARD ================= */}
 
-                <Route
-                    path="/resident-dashboard"
-                    element={<ResidentDashboard />}
-                />
+                <Route element={<ProtectedRoute role="resident" />}>
+                    <Route path="/resident-dashboard" element={<ResidentDashboard />} />
+                </Route>
 
 
                 {/* ================= TECHNICIAN DASHBOARD ================= */}
 
-                <Route
-                    path="/technician-dashboard"
-                    element={<TechnicianDashboard />}
-                />
+                <Route element={<ProtectedRoute role="technician" />}>
+                    <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
+                </Route>
 
 
                 {/* ================= MANAGER DASHBOARD ================= */}
 
-                <Route
-                    path="/manager-dashboard"
-                    element={<ManagerDashboard />}
-                />
+                <Route element={<ProtectedRoute role="manager" />}>
+                    <Route path="/manager-dashboard" element={<ManagerDashboard />} />
+                </Route>
+                <Route path="*" element={<Navigate to="/" replace />} />
 
             </Routes>
 

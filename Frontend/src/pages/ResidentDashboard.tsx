@@ -1,57 +1,30 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useDashboard, shortId, dateLabel, trendPoints } from "../useDashboard";
+import type { MaintenanceRequest } from "../useDashboard";
+import RequestEditor from "../components/RequestEditor";
+import RequestUpdates from "../components/RequestUpdates";
 import "../styles/Dashboard.css";
 
-interface Request {
-    id: string;
-    icon: string;
-    title: string;
-    description: string;
-    priority: "High" | "Medium" | "Low";
-    status: "In Progress" | "Completed" | "Pending";
-    date: string;
-}
-
 function ResidentDashboard() {
-
     const [activeMenu, setActiveMenu] = useState("Dashboard");
-
-    const requests: Request[] = [
-        {
-            id: "#1001",
-            icon: "🔧",
-            title: "Plumbing Issue",
-            description: "Water leakage in bathroom",
-            priority: "High",
-            status: "In Progress",
-            date: "02 Oct 2025"
-        },
-        {
-            id: "#1002",
-            icon: "💡",
-            title: "Electrical Issue",
-            description: "Bedroom light is not working",
-            priority: "Medium",
-            status: "Completed",
-            date: "28 Sep 2025"
-        },
-        {
-            id: "#1003",
-            icon: "❄️",
-            title: "Air Conditioning",
-            description: "AC needs servicing",
-            priority: "Low",
-            status: "Pending",
-            date: "25 Sep 2025"
-        }
-    ];
+    const { user, requests: rawRequests, loading, error, reload, pending, active, completed, completionRate, logout } = useDashboard();
+    const [search, setSearch] = useState("");
+    const [createOpen, setCreateOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState<MaintenanceRequest | null>(null);
+    const requests = rawRequests.filter((request) => `${request.title} ${request.description} ${request.status}`.toLowerCase().includes(search.toLowerCase())).map((request) => ({
+        ...request, id: shortId(request._id), icon: request.category === "Electrical" ? "💡" : "🔧", date: dateLabel(request.createdAt),
+    }));
 
     const handleMenuClick = (menu: string) => {
         setActiveMenu(menu);
+        if (menu === "Create Request") setCreateOpen(true);
+        else document.getElementById(menu === "Notifications" ? "request-updates" : "resident-requests")?.scrollIntoView({ behavior: "smooth" });
     };
 
     return (
         <div className="resident-dashboard">
+            {(createOpen || selectedRequest) && <RequestEditor user={user} request={selectedRequest || undefined} onClose={() => { setCreateOpen(false); setSelectedRequest(null); }} onSaved={() => reload()} />}
 
             {/* ================= SIDEBAR ================= */}
 
@@ -75,9 +48,9 @@ function ResidentDashboard() {
                     </div>
 
                     <div className="profile-info">
-                        <h3>John Resident</h3>
+                        <h3>{user.fullName}</h3>
                         <p>Resident</p>
-                        <span>Apartment A-204</span>
+                        <span>Apartment {user.unitNumber || "not set"}</span>
                     </div>
 
                 </div>
@@ -136,7 +109,7 @@ function ResidentDashboard() {
                         <span>Notifications</span>
 
                         <span className="notification-badge">
-                            3
+                            {rawRequests.length}
                         </span>
                     </button>
 
@@ -166,6 +139,7 @@ function ResidentDashboard() {
                     <Link
                         to="/login"
                         className="logout-link"
+                        onClick={logout}
                     >
                         Logout
                     </Link>
@@ -192,6 +166,8 @@ function ResidentDashboard() {
                         <input
                             type="text"
                             placeholder="Search requests, notifications..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
 
                     </div>
@@ -206,7 +182,7 @@ function ResidentDashboard() {
                             </span>
 
                             <span className="notification-count">
-                                3
+                                {rawRequests.length}
                             </span>
 
                         </div>
@@ -221,11 +197,11 @@ function ResidentDashboard() {
                             <div>
 
                                 <strong>
-                                    John Resident
+                                    {user.fullName}
                                 </strong>
 
                                 <span>
-                                    Apartment A-204
+                                    Apartment {user.unitNumber || "not set"}
                                 </span>
 
                             </div>
@@ -244,6 +220,10 @@ function ResidentDashboard() {
                 {/* ================= CONTENT ================= */}
 
                 <section className="dashboard-content">
+                    {loading && <p role="status">Loading requests…</p>}
+                    {error && <div role="alert" className="integration-panel">{error}<button onClick={() => void reload()}>Retry</button></div>}
+                    {!loading && !error && !rawRequests.length && <p>No maintenance requests yet. Create your first request.</p>}
+                    {activeMenu === "Profile" && <section className="integration-panel"><h2>Profile</h2><p>{user.fullName}<br />{user.email}<br />Unit: {user.unitNumber || "not set"}</p></section>}
 
 
                     {/* ================= HERO BANNER ================= */}
@@ -308,11 +288,11 @@ function ResidentDashboard() {
                                 </span>
 
                                 <strong>
-                                    3
+                                    {rawRequests.length}
                                 </strong>
 
                                 <small>
-                                    +1 this month
+                                    All your requests
                                 </small>
 
                             </div>
@@ -323,7 +303,7 @@ function ResidentDashboard() {
                                     preserveAspectRatio="none"
                                 >
                                     <polyline
-                                        points="0,40 15,32 28,35 42,20 58,25 70,15 82,18 100,3"
+                                        points={trendPoints(rawRequests)}
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="4"
@@ -351,7 +331,7 @@ function ResidentDashboard() {
                                 </span>
 
                                 <strong>
-                                    1
+                                    {pending}
                                 </strong>
 
                                 <small>
@@ -367,7 +347,7 @@ function ResidentDashboard() {
                                     preserveAspectRatio="none"
                                 >
                                     <polyline
-                                        points="0,42 15,40 28,28 40,30 52,20 65,25 78,10 88,15 100,2"
+                                        points={trendPoints(rawRequests, "Pending")}
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="4"
@@ -396,7 +376,7 @@ function ResidentDashboard() {
                                 </span>
 
                                 <strong>
-                                    1
+                                    {active}
                                 </strong>
 
                                 <small>
@@ -412,7 +392,7 @@ function ResidentDashboard() {
                                     preserveAspectRatio="none"
                                 >
                                     <polyline
-                                        points="0,43 15,40 30,25 45,30 58,18 70,22 82,8 92,12 100,1"
+                                        points={trendPoints(rawRequests, "In Progress")}
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="4"
@@ -441,11 +421,11 @@ function ResidentDashboard() {
                                 </span>
 
                                 <strong>
-                                    1
+                                    {completed}
                                 </strong>
 
                                 <small>
-                                    This month
+                                    Completed requests
                                 </small>
 
                             </div>
@@ -457,7 +437,7 @@ function ResidentDashboard() {
                                     preserveAspectRatio="none"
                                 >
                                     <polyline
-                                        points="0,42 15,35 28,38 42,27 55,29 68,18 80,21 90,10 100,3"
+                                        points={trendPoints(rawRequests, "Completed")}
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="4"
@@ -480,7 +460,7 @@ function ResidentDashboard() {
 
                         {/* RECENT REQUESTS */}
 
-                        <section className="requests-section">
+                        <section className="requests-section" id="resident-requests">
 
                             <div className="section-heading">
 
@@ -496,7 +476,7 @@ function ResidentDashboard() {
 
                                 </div>
 
-                                <button className="view-all-btn">
+                                <button className="view-all-btn" onClick={() => handleMenuClick("My Requests")}>
                                     View All →
                                 </button>
 
@@ -587,7 +567,7 @@ function ResidentDashboard() {
                                         </span>
 
 
-                                        <button className="view-request">
+                                        <button className="view-request" onClick={() => setSelectedRequest(rawRequests.find((item) => item._id === request._id) || null)}>
                                             View
                                         </button>
 
@@ -622,7 +602,7 @@ function ResidentDashboard() {
                                 </div>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => handleMenuClick("Create Request")}>
                                     <span className="quick-icon blue">
                                         ＋
                                     </span>
@@ -637,7 +617,7 @@ function ResidentDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => handleMenuClick("My Requests")}>
                                     <span className="quick-icon purple">
                                         ▤
                                     </span>
@@ -652,7 +632,7 @@ function ResidentDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => handleMenuClick("Request Tracking")}>
                                     <span className="quick-icon green">
                                         ◉
                                     </span>
@@ -667,7 +647,7 @@ function ResidentDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => handleMenuClick("Notifications")}>
                                     <span className="quick-icon orange">
                                         🔔
                                     </span>
@@ -677,7 +657,7 @@ function ResidentDashboard() {
                                     </span>
 
                                     <em>
-                                        3
+                                        {rawRequests.length}
                                     </em>
 
                                 </button>
@@ -699,115 +679,14 @@ function ResidentDashboard() {
                                         Recent Notifications
                                     </h3>
 
-                                    <a href="#">
+                                    <a href="#request-updates">
                                         View All
                                     </a>
 
                                 </div>
 
 
-                                <div className="notification-item">
-
-                                    <div className="notification-circle blue">
-                                        ✓
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Request Accepted
-                                        </strong>
-
-                                        <p>
-                                            Your plumbing request #1001
-                                            has been accepted.
-                                        </p>
-
-                                    </div>
-
-                                    <time>
-                                        2h
-                                    </time>
-
-                                </div>
-
-
-                                <div className="notification-item">
-
-                                    <div className="notification-circle purple">
-                                        👤
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Technician Assigned
-                                        </strong>
-
-                                        <p>
-                                            A technician has been assigned
-                                            to your request.
-                                        </p>
-
-                                    </div>
-
-                                    <time>
-                                        3h
-                                    </time>
-
-                                </div>
-
-
-                                <div className="notification-item">
-
-                                    <div className="notification-circle orange">
-                                        !
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Status Update
-                                        </strong>
-
-                                        <p>
-                                            Your maintenance request is
-                                            currently in progress.
-                                        </p>
-
-                                    </div>
-
-                                    <time>
-                                        4h
-                                    </time>
-
-                                </div>
-
-
-                                <div className="notification-item">
-
-                                    <div className="notification-circle green">
-                                        ✓
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Request Completed
-                                        </strong>
-
-                                        <p>
-                                            Your electrical request #1002
-                                            has been completed.
-                                        </p>
-
-                                    </div>
-
-                                    <time>
-                                        2d
-                                    </time>
-
-                                </div>
+                                <RequestUpdates requests={rawRequests} />
 
                             </div>
 
@@ -816,10 +695,10 @@ function ResidentDashboard() {
 
                             <div className="completion-panel">
 
-                                <div className="completion-circle">
+                                <div className="completion-circle" style={{ background: `conic-gradient(#20d9c5 ${completionRate}%, #e8edf2 0)` }}>
 
                                     <span>
-                                        67%
+                                        {completionRate}%
                                     </span>
 
                                 </div>
@@ -831,11 +710,11 @@ function ResidentDashboard() {
                                     </strong>
 
                                     <p>
-                                        2 of 3 requests completed
+                                        {completed} of {rawRequests.length} requests completed
                                     </p>
 
                                     <small>
-                                        ↗ +33% from last month
+                                        Based on your requests
                                     </small>
 
                                 </div>

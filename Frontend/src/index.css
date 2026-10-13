@@ -13,3 +13,11 @@ body{
   sans-serif;
 
 }
+
+.integration-modal { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #10284baa; padding: 24px; overflow: auto; }
+.integration-panel { background: white; color: #10284b; border-radius: 18px; padding: 24px; margin: 16px 0; max-width: 680px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 12px 40px #10284b22; }
+.integration-panel h2, .integration-panel p { margin-bottom: 16px; }
+.integration-panel label { display: block; margin: 12px 0; }
+.integration-panel input, .integration-panel textarea, .integration-panel select { display: block; width: 100%; border: 1px solid #ccd5df; border-radius: 8px; padding: 10px; margin-top: 6px; font: inherit; }
+.integration-panel button { padding: 10px 18px; margin: 8px 8px 0 0; border: 0; border-radius: 8px; background: #10284b; color: white; cursor: pointer; }
+button:disabled { opacity: .65; cursor: wait; }

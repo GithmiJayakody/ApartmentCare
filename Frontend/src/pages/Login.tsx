@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/Login.css";
+import api, { apiError, saveSession } from "../api";
+import type { User } from "../api";
 
 function Login() {
 
@@ -31,96 +33,29 @@ function Login() {
     const [error, setError] = useState("");
 
 
-    // Automatically change Login As according to
-    // the role selected from the Home page
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-
-        if (roleFromUrl === "resident") {
-
-            setRole("Resident");
-
-        }
-
-        else if (roleFromUrl === "technician") {
-
-            setRole("Technician");
-
-        }
-
-        else if (roleFromUrl === "manager") {
-
-            setRole("Manager");
-
-        }
-
-    }, [roleFromUrl]);
-
-
-    // ================================
-    // LOGIN
-    // ================================
-
-    const handleLogin = (e: React.FormEvent) => {
-
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        if (loading) return;
         setError("");
-
-
-        // Frontend-only validation
-
-        if (!email || !password) {
-
-            setError(
-                "Please enter your email and password."
-            );
-
+        if (!email.trim() || !password) {
+            setError("Please enter your email and password.");
             return;
         }
-
-
-        // Save login information
-
-        if (rememberMe) {
-
-            localStorage.setItem(
-                "livoraEmail",
-                email
-            );
-
-            localStorage.setItem(
-                "livoraRole",
-                role
-            );
-
+        setLoading(true);
+        try {
+            const { data } = await api.post<{ token: string; user: User }>("/auth/login", {
+                email: email.trim(), password, role: role.toLowerCase(),
+            });
+            saveSession(data.token, data.user, rememberMe);
+            navigate(`/${data.user.role}-dashboard`, { replace: true });
+        } catch (error) {
+            setError(apiError(error));
+        } finally {
+            setLoading(false);
         }
-
-
-        // ================================
-        // ROLE BASED DASHBOARD
-        // ================================
-
-        if (role === "Resident") {
-
-            navigate("/resident-dashboard");
-
-        }
-
-        else if (role === "Technician") {
-
-            navigate("/technician-dashboard");
-
-        }
-
-        else if (role === "Manager") {
-
-            navigate("/manager-dashboard");
-
-        }
-
     };
-
 
     return (
 
@@ -340,6 +275,7 @@ function Login() {
                         <button
                             type="button"
                             className="forgot-password"
+                            onClick={() => setError("Please contact your apartment manager for help recovering your account.")}
                         >
                             Forgot Password?
                         </button>
@@ -354,8 +290,9 @@ function Login() {
                     <button
                         type="submit"
                         className="login-submit"
+                        disabled={loading}
                     >
-                        Sign In →
+                        {loading ? "Signing in…" : "Sign In →"}
                     </button>
 
 
