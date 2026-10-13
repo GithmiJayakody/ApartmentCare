@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Register.css";
+import api, { apiError } from "../api";
 
 type Role = "Resident" | "Technician" | "Manager";
 
@@ -22,6 +23,7 @@ function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // Select role
     const handleRoleSelect = (role: Role) => {
@@ -40,8 +42,9 @@ function Register() {
     };
 
     // Create account
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (loading) return;
 
         setError("");
 
@@ -77,40 +80,20 @@ function Register() {
             return;
         }
 
-        /*
-         * Frontend-only account information.
-         * This is temporary because backend is not created yet.
-         */
-        localStorage.setItem("livoraName", fullName);
-        localStorage.setItem("livoraEmail", email);
-        localStorage.setItem("livoraRole", selectedRole);
-
-        if (selectedRole === "Resident") {
-            localStorage.setItem("livoraApartment", apartment);
-        } else {
-            localStorage.removeItem("livoraApartment");
+        setLoading(true);
+        try {
+            await api.post("/auth/register", {
+                fullName: fullName.trim(), email: email.trim(),
+                password, confirmPassword, role: selectedRole.toLowerCase(),
+                ...(selectedRole === "Resident" ? { unitNumber: apartment.trim() } : {}),
+                ...(selectedRole === "Technician" ? { speciality } : {}),
+            });
+            navigate(`/login?role=${selectedRole.toLowerCase()}`);
+        } catch (error) {
+            setError(apiError(error));
+        } finally {
+            setLoading(false);
         }
-
-        if (selectedRole === "Technician") {
-            localStorage.setItem("livoraSpeciality", speciality);
-        } else {
-            localStorage.removeItem("livoraSpeciality");
-        }
-
-        /*
-         * After registration:
-         * Go to Login and send the selected role.
-         *
-         * Example:
-         * Resident   → Login with Resident selected
-         * Technician → Login with Technician selected
-         * Manager    → Login with Manager selected
-         */
-        navigate("/login", {
-            state: {
-                role: selectedRole
-            }
-        });
     };
 
     return (
@@ -549,8 +532,9 @@ function Register() {
                             <button
                                 type="submit"
                                 className="register-submit"
+                                disabled={loading}
                             >
-                                Create Account →
+                                {loading ? "Creating account…" : "Create Account →"}
                             </button>
 
                         </form>

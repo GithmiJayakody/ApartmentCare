@@ -1,84 +1,43 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TechnicianDashboard.css";
-
-interface Job {
-    id: string;
-    category: string;
-    resident: string;
-    unit: string;
-    priority: string;
-    status: string;
-    date: string;
-}
+import { useDashboard, shortId, dateLabel, trendPoints, initials } from "../useDashboard";
+import type { MaintenanceRequest } from "../useDashboard";
+import RequestEditor from "../components/RequestEditor";
+import RequestUpdates from "../components/RequestUpdates";
+import api, { apiError } from "../api";
 
 function TechnicianDashboard() {
-
     const navigate = useNavigate();
-
     const [search, setSearch] = useState("");
-
-    const jobs: Job[] = [
-        {
-            id: "#1001",
-            category: "Plumbing",
-            resident: "John Resident",
-            unit: "A-204",
-            priority: "High",
-            status: "Assigned",
-            date: "05 Oct 2026"
-        },
-        {
-            id: "#1002",
-            category: "Electrical",
-            resident: "Sarah Perera",
-            unit: "B-102",
-            priority: "Medium",
-            status: "In Progress",
-            date: "06 Oct 2026"
-        },
-        {
-            id: "#1003",
-            category: "Maintenance",
-            resident: "David Fernando",
-            unit: "C-305",
-            priority: "High",
-            status: "In Progress",
-            date: "07 Oct 2026"
-        },
-        {
-            id: "#1004",
-            category: "Air Conditioning",
-            resident: "Nimal Silva",
-            unit: "A-101",
-            priority: "Low",
-            status: "Completed",
-            date: "02 Oct 2026"
-        },
-        {
-            id: "#1005",
-            category: "Maintenance",
-            resident: "Kasun Perera",
-            unit: "B-210",
-            priority: "Medium",
-            status: "Pending",
-            date: "08 Oct 2026"
-        }
-    ];
-
-    const filteredJobs = jobs.filter((job) =>
-        `${job.id} ${job.category} ${job.resident} ${job.unit}`
-            .toLowerCase()
-            .includes(search.toLowerCase())
-    );
-
-    const logout = () => {
-        navigate("/login");
+    const [activeMenu, setActiveMenu] = useState("Dashboard");
+    const { user, requests, loading, error, reload, pending, active, completed, completionRate, logout } = useDashboard();
+    const [selectedRequest, setSelectedRequest] = useState<MaintenanceRequest | null>(null);
+    const [available, setAvailable] = useState(user.available !== false);
+    const [availabilityError, setAvailabilityError] = useState("");
+    const [updatingAvailability, setUpdatingAvailability] = useState(false);
+    const filteredJobs = requests.filter((request) => `${shortId(request._id)} ${request.category} ${request.title} ${request.resident?.fullName || ""} ${request.unitNumber}`.toLowerCase().includes(search.toLowerCase())).map((request) => ({
+        ...request, id: shortId(request._id), resident: request.resident?.fullName || "Resident unavailable", unit: request.unitNumber, date: dateLabel(request.createdAt),
+    }));
+    const selectMenu = (menu: string) => {
+        setActiveMenu(menu);
+        document.getElementById(menu === "Notifications" ? "request-updates" : "assigned-jobs")?.scrollIntoView({ behavior: "smooth" });
+    };
+    const updateAvailability = async () => {
+        if (updatingAvailability) return;
+        setUpdatingAvailability(true);
+        setAvailabilityError("");
+        try {
+            const { data } = await api.patch("/auth/me", { available: !available });
+            setAvailable(data.user.available);
+        } catch (error) { setAvailabilityError(apiError(error)); }
+        finally { setUpdatingAvailability(false); }
     };
 
     return (
 
         <div className="technician-dashboard">
+            {selectedRequest && <RequestEditor user={user} request={selectedRequest} onClose={() => setSelectedRequest(null)} onSaved={() => reload()} />}
 
             {/* =================================================
                 SIDEBAR
@@ -95,14 +54,12 @@ function TechnicianDashboard() {
 
                 <div className="tech-profile">
 
-                    <div className="tech-avatar">
-                        MK
-                    </div>
+                    <div className="tech-avatar">{initials(user.fullName)}</div>
 
                     <div>
-                        <h3>Mike Kumar</h3>
+                        <h3>{user.fullName}</h3>
 
-                        <p>Electrical Technician</p>
+                        <p>{user.speciality || "Maintenance"} Technician</p>
                     </div>
 
                 </div>
@@ -112,7 +69,7 @@ function TechnicianDashboard() {
 
                 <nav className="tech-nav">
 
-                    <button className="tech-nav-item active">
+                    <button className={`tech-nav-item ${activeMenu === "Dashboard" ? "active" : ""}`} onClick={() => selectMenu("Dashboard")}>
 
                         <span>⌂</span>
 
@@ -121,7 +78,7 @@ function TechnicianDashboard() {
                     </button>
 
 
-                    <button className="tech-nav-item">
+                    <button className={`tech-nav-item ${activeMenu === "My Jobs" ? "active" : ""}`} onClick={() => selectMenu("My Jobs")}>
 
                         <span>🔧</span>
 
@@ -130,7 +87,7 @@ function TechnicianDashboard() {
                     </button>
 
 
-                    <button className="tech-nav-item">
+                    <button className={`tech-nav-item ${activeMenu === "Calendar" ? "active" : ""}`} onClick={() => selectMenu("Calendar")}>
 
                         <span>📅</span>
 
@@ -139,20 +96,20 @@ function TechnicianDashboard() {
                     </button>
 
 
-                    <button className="tech-nav-item">
+                    <button className={`tech-nav-item ${activeMenu === "Notifications" ? "active" : ""}`} onClick={() => selectMenu("Notifications")}>
 
                         <span>🔔</span>
 
                         Notifications
 
                         <b className="notification-count">
-                            2
+                            {requests.length}
                         </b>
 
                     </button>
 
 
-                    <button className="tech-nav-item">
+                    <button className={`tech-nav-item ${activeMenu === "Profile" ? "active" : ""}`} onClick={() => selectMenu("Profile")}>
 
                         <span>👤</span>
 
@@ -219,25 +176,23 @@ function TechnicianDashboard() {
 
                             🔔
 
-                            <span>2</span>
+                            <span>{requests.length}</span>
 
                         </div>
 
 
                         <div className="tech-user">
 
-                            <div className="tech-user-avatar">
-                                MK
-                            </div>
+                            <div className="tech-user-avatar">{initials(user.fullName)}</div>
 
                             <div>
 
                                 <strong>
-                                    Mike Kumar
+                                    {user.fullName}
                                 </strong>
 
                                 <small>
-                                    Electrical Technician
+                                    {user.speciality || "Maintenance"} Technician
                                 </small>
 
                             </div>
@@ -258,6 +213,12 @@ function TechnicianDashboard() {
                 ================================================= */}
 
                 <div className="tech-content">
+                    {loading && <p role="status">Loading assigned requests…</p>}
+                    {error && <div className="integration-panel" role="alert">{error}<button onClick={() => void reload()}>Retry</button></div>}
+                    {availabilityError && <p role="alert">{availabilityError}</p>}
+                    {!loading && !error && !requests.length && <p>No jobs assigned yet.</p>}
+                    {activeMenu === "Profile" && <section className="integration-panel"><h2>Profile</h2><p>{user.fullName}<br />{user.email}<br />{user.speciality}<br />Availability: {available ? "Available" : "Unavailable"}</p></section>}
+                    {activeMenu === "Calendar" && <section className="integration-panel"><h2>Job calendar</h2><p>Assigned request dates</p>{requests.map((request) => <p key={request._id}>{dateLabel(request.createdAt)} — {request.title} · {request.status}</p>)}</section>}
 
 
                     {/* =================================================
@@ -325,17 +286,17 @@ function TechnicianDashboard() {
                                 </span>
 
                                 <strong>
-                                    5
+                                    {requests.length}
                                 </strong>
 
                                 <small>
-                                    +2 this week
+                                    All assigned requests
                                 </small>
 
                             </div>
 
                             <div className="mini-chart blue-chart">
-                                ╱╲╱╲
+                                <svg width="90" height="45" viewBox="0 0 100 50" aria-label="Requests created in the last seven days"><polyline points={trendPoints(requests)} fill="none" stroke="currentColor" strokeWidth="3" /></svg>
                             </div>
 
                         </div>
@@ -356,7 +317,7 @@ function TechnicianDashboard() {
                                 </span>
 
                                 <strong>
-                                    2
+                                    {pending}
                                 </strong>
 
                                 <small>
@@ -366,7 +327,7 @@ function TechnicianDashboard() {
                             </div>
 
                             <div className="mini-chart yellow-chart">
-                                ╱╲╱╲
+                                <svg width="90" height="45" viewBox="0 0 100 50" aria-label="Requests created in the last seven days"><polyline points={trendPoints(requests, "Pending")} fill="none" stroke="currentColor" strokeWidth="3" /></svg>
                             </div>
 
                         </div>
@@ -387,7 +348,7 @@ function TechnicianDashboard() {
                                 </span>
 
                                 <strong>
-                                    2
+                                    {active}
                                 </strong>
 
                                 <small>
@@ -397,7 +358,7 @@ function TechnicianDashboard() {
                             </div>
 
                             <div className="mini-chart purple-chart">
-                                ╱╲╱╲
+                                <svg width="90" height="45" viewBox="0 0 100 50" aria-label="Requests created in the last seven days"><polyline points={trendPoints(requests, "In Progress")} fill="none" stroke="currentColor" strokeWidth="3" /></svg>
                             </div>
 
                         </div>
@@ -418,17 +379,17 @@ function TechnicianDashboard() {
                                 </span>
 
                                 <strong>
-                                    3
+                                    {completed}
                                 </strong>
 
                                 <small>
-                                    This month
+                                    Completed requests
                                 </small>
 
                             </div>
 
                             <div className="mini-chart green-chart">
-                                ╱╲╱╲
+                                <svg width="90" height="45" viewBox="0 0 100 50" aria-label="Requests created in the last seven days"><polyline points={trendPoints(requests, "Completed")} fill="none" stroke="currentColor" strokeWidth="3" /></svg>
                             </div>
 
                         </div>
@@ -467,7 +428,7 @@ function TechnicianDashboard() {
 
                                 </div>
 
-                                <button className="view-all-btn">
+                                <button className="view-all-btn" onClick={() => selectMenu("My Jobs")}>
                                     View All →
                                 </button>
 
@@ -545,11 +506,11 @@ function TechnicianDashboard() {
                                                         <div>
 
                                                             <strong>
-                                                                {job.category}
+                                                                {job.title}
                                                             </strong>
 
                                                             <small>
-                                                                Maintenance request
+                                                                {job.description}
                                                             </small>
 
                                                         </div>
@@ -604,7 +565,7 @@ function TechnicianDashboard() {
 
                                                 <td>
 
-                                                    <button className="view-job-btn">
+                                                    <button className="view-job-btn" onClick={() => setSelectedRequest(requests.find((item) => item._id === job._id) || null)}>
                                                         View
                                                     </button>
 
@@ -639,7 +600,7 @@ function TechnicianDashboard() {
                                 </h2>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => selectMenu("My Jobs")}>
 
                                     <span className="quick-icon blue-bg">
                                         🔧
@@ -656,7 +617,7 @@ function TechnicianDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => selectMenu("Calendar")}>
 
                                     <span className="quick-icon purple-bg">
                                         📅
@@ -673,14 +634,14 @@ function TechnicianDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => void updateAvailability()}>
 
                                     <span className="quick-icon green-bg">
                                         ✓
                                     </span>
 
                                     <span>
-                                        Update Availability
+                                        {available ? "Set Unavailable" : "Set Available"}
                                     </span>
 
                                     <b>
@@ -690,7 +651,7 @@ function TechnicianDashboard() {
                                 </button>
 
 
-                                <button className="quick-action">
+                                <button className="quick-action" onClick={() => selectMenu("Notifications")}>
 
                                     <span className="quick-icon orange-bg">
                                         🔔
@@ -701,7 +662,7 @@ function TechnicianDashboard() {
                                     </span>
 
                                     <b className="quick-notification">
-                                        2
+                                        {requests.length}
                                     </b>
 
                                 </button>
@@ -719,89 +680,14 @@ function TechnicianDashboard() {
                                         🔔 Recent Notifications
                                     </h2>
 
-                                    <a href="#">
+                                    <a href="#request-updates">
                                         View All
                                     </a>
 
                                 </div>
 
 
-                                <div className="notification-item">
-
-                                    <div className="notification-icon blue-bg">
-                                        🔧
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            New Job Assigned
-                                        </strong>
-
-                                        <p>
-                                            Plumbing request #1001
-                                            has been assigned to you.
-                                        </p>
-
-                                        <small>
-                                            2 hours ago
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="notification-item">
-
-                                    <div className="notification-icon purple-bg">
-                                        📅
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Job Schedule Updated
-                                        </strong>
-
-                                        <p>
-                                            Electrical job #1002
-                                            is scheduled for tomorrow.
-                                        </p>
-
-                                        <small>
-                                            4 hours ago
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="notification-item">
-
-                                    <div className="notification-icon orange-bg">
-                                        ⚠️
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            High Priority Job
-                                        </strong>
-
-                                        <p>
-                                            Request #1003 requires
-                                            immediate attention.
-                                        </p>
-
-                                        <small>
-                                            Yesterday
-                                        </small>
-
-                                    </div>
-
-                                </div>
+                                <RequestUpdates requests={requests} />
 
                             </div>
 
@@ -816,11 +702,11 @@ function TechnicianDashboard() {
 
                                 <div className="completion-content">
 
-                                    <div className="completion-circle">
+                                    <div className="completion-circle" style={{ background: `conic-gradient(#20d9c5 ${completionRate}%, #e8edf2 0)` }}>
 
                                         <div>
                                             <strong>
-                                                60%
+                                                {completionRate}%
                                             </strong>
 
                                             <span>
@@ -836,19 +722,19 @@ function TechnicianDashboard() {
                                         <p>
                                             <span className="dot green-dot"></span>
                                             Completed
-                                            <strong>3</strong>
+                                            <strong>{completed}</strong>
                                         </p>
 
                                         <p>
                                             <span className="dot purple-dot"></span>
                                             In Progress
-                                            <strong>2</strong>
+                                            <strong>{active}</strong>
                                         </p>
 
                                         <p>
                                             <span className="dot yellow-dot"></span>
                                             Pending
-                                            <strong>2</strong>
+                                            <strong>{pending}</strong>
                                         </p>
 
                                     </div>

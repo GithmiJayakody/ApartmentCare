@@ -1,0 +1,112 @@
+import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+const password = "Browser-test-password-123!";
+
+async function register(page: Page, role: string, email: string) {
+    await page.goto("/register");
+    await page.getByRole("button", { name: new RegExp(`^.*${role}.*Manage`) }).click();
+    await page.getByPlaceholder("Enter your full name").fill(`Browser ${role}`);
+    await page.getByPlaceholder("Enter your email", { exact: true }).fill(email);
+    await page.getByPlaceholder("Create a password").fill(password);
+    await page.getByPlaceholder("Confirm your password").fill(password);
+    if (role === "Resident") await page.getByPlaceholder("Example: A-204").fill("BROWSER-A204");
+    else await expect(page.getByPlaceholder("Example: A-204")).toHaveCount(0);
+    if (role === "Technician") await page.locator(".register-input-group select").selectOption("Plumbing");
+    await page.getByRole("button", { name: "Create Account →" }).click();
+    await expect(page).toHaveURL(new RegExp(`/login\\?role=${role.toLowerCase()}$`));
+    await expect(page.locator(".role-select select")).toHaveValue(role);
+}
+
+async function login(page: Page, role: string, email: string, remember = false) {
+    await page.goto(`/login?role=${role.toLowerCase()}`);
+    await page.locator('input[type="email"]').fill(email);
+    await page.locator('input[type="password"]').fill(password);
+    if (remember) await page.getByRole("checkbox", { name: "Remember me" }).check();
+    await page.getByRole("button", { name: "Sign In →" }).click();
+    await expect(page).toHaveURL(`/${role.toLowerCase()}-dashboard`);
+    await expect(page.locator('[role="status"]')).toHaveCount(0);
+}
+
+test("real browser registration, login, role redirects, assignment and completion", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+    const stamp = Date.now();
+    const residentEmail = `browser.resident.${stamp}@example.test`;
+    const technicianEmail = `browser.technician.${stamp}@example.test`;
+    const managerEmail = `browser.manager.${stamp}@example.test`;
+    await register(page, "Resident", residentEmail);
+    await register(page, "Technician", technicianEmail);
+    await register(page, "Manager", managerEmail);
+    await login(page, "Resident", residentEmail);
+    expect(await page.evaluate(() => Boolean(sessionStorage.getItem("token")) && !localStorage.getItem("token"))).toBe(true);
+    await expect(page.locator(".profile-info")).toContainText("Browser Resident");
+    await expect(page.locator(".profile-info")).toContainText("BROWSER-A204");
+    await page.getByRole("button", { name: "＋ Create New Request", exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByLabel("Title", { exact: true }).fill("Browser test plumbing leak");
+    await dialog.getByLabel("Description").fill("End-to-end test water leak");
+    await dialog.getByLabel("Category").selectOption("Plumbing");
+    await dialog.getByLabel("Priority").selectOption("High");
+    await dialog.getByRole("button", { name: "Save request" }).click();
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator(".requests-table")).toContainText("Browser test plumbing leak");
+    await expect(page.locator(".total-card strong")).toHaveText("1");
+    await page.reload();
+    await expect(page.locator(".requests-table")).toContainText("Browser test plumbing leak");
+    await page.goto("/manager-dashboard");
+    await expect(page).toHaveURL("/resident-dashboard");
+    await page.getByRole("link", { name: "Logout", exact: true }).click();
+    expect(await page.evaluate(() => sessionStorage.getItem("token") || localStorage.getItem("token"))).toBeNull();
+    await page.goto("/resident-dashboard");
+    await expect(page).toHaveURL(/\/login\?role=resident$/);
+    await login(page, "Manager", managerEmail, true);
+    expect(await page.evaluate(() => Boolean(localStorage.getItem("token")) && !sessionStorage.getItem("token"))).toBe(true);
+    await page.locator(".manager-nav-item").filter({ hasText: "Residents" }).click();
+    await expect(page.locator(".integration-panel")).toContainText(residentEmail);
+    await page.locator(".manager-nav-item").filter({ hasText: "Technicians" }).click();
+    await expect(page.locator(".integration-panel")).toContainText(technicianEmail);
+    await page.locator(".manager-view-btn").first().click();
+    await page.getByRole("dialog").getByLabel("Assigned technician").selectOption({ label: "Browser Technician — Plumbing" });
+    await page.getByRole("dialog").getByRole("button", { name: "Save request" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await page.getByRole("button", { name: "⇥ Logout" }).click();
+    await login(page, "Technician", technicianEmail);
+    await expect(page.locator(".jobs-table")).toContainText("Browser test plumbing leak");
+    await expect(page.locator(".tech-stat-card.blue strong")).toHaveText("1");
+    await page.locator(".view-job-btn").first().click();
+    await page.getByRole("dialog").getByLabel("Status").selectOption("In Progress");
+    await page.getByRole("dialog").getByRole("button", { name: "Save request" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator(".tech-stat-card.purple strong")).toHaveText("1");
+    await page.locator(".view-job-btn").first().click();
+    await page.getByRole("dialog").getByLabel("Status").selectOption("Completed");
+    await page.getByRole("dialog").getByRole("button", { name: "Save request" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator(".tech-stat-card.green strong")).toHaveText("1");
+    await page.getByRole("button", { name: "Set Unavailable" }).click();
+    await expect(page.getByRole("button", { name: "Set Available" })).toBeVisible();
+    await page.getByRole("button", { name: "⇥ Logout" }).click();
+    await login(page, "Resident", residentEmail);
+    await expect(page.locator(".requests-table .status")).toHaveText("Completed");
+    await expect(page.locator(".completed-card strong")).toHaveText("1");
+    await expect(page.locator(".completion-panel")).toContainText("100%");
+    await page.screenshot({ path: "test-results/resident-dashboard.png", fullPage: true });
+    await page.getByRole("link", { name: "Logout", exact: true }).click();
+    await login(page, "Manager", managerEmail);
+    await expect(page.locator(".manager-stat-card.green strong")).toHaveText("1");
+    await page.screenshot({ path: "test-results/manager-dashboard.png", fullPage: true });
+    expect(errors).toEqual([]);
+});
+
+test("failed login and invalid session show errors without granting access", async ({ page }) => {
+    await page.goto("/login");
+    await page.locator('input[type="email"]').fill("nonexistent@example.test");
+    await page.locator('input[type="password"]').fill(password);
+    await page.getByRole("button", { name: "Sign In →" }).click();
+    await expect(page.locator(".login-error")).toHaveText("Invalid email or password.");
+    await page.evaluate(() => localStorage.setItem("token", "invalid"));
+    await page.goto("/manager-dashboard");
+    await expect(page).toHaveURL(/\/login\?role=manager$/);
+    expect(await page.evaluate(() => localStorage.getItem("token"))).toBeNull();
+});
