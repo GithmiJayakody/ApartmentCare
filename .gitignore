@@ -1,5 +1,16 @@
-node_modules/
+# Docker image backups
+*.tar
+
+# MongoDB database backups
+*.archive
+
+# Environment variables
 .env
 .env.*
 !.env.example
-test-results/
+
+# Node modules
+node_modules/
+
+# Build output
+dist/

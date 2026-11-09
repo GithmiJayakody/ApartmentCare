@@ -1,28 +1,45 @@
+
 services:
+  mongodb:
+    image: mongo:8
+    container_name: apartmentcare-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - apartmentcare-network
 
   backend:
     build:
       context: ./Backend
-    container_name: livora-backend
+    container_name: apartmentcare-backend
     ports:
       - "5000:5000"
     env_file:
       - ./Backend/.env
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/ApartmentCare
+    depends_on:
+      - mongodb
+    restart: unless-stopped
     networks:
-      - livora-network
+      - apartmentcare-network
 
   frontend:
     build:
       context: ./Frontend
-    container_name: livora-frontend
+    container_name: apartmentcare-frontend
     ports:
       - "5173:80"
     depends_on:
       - backend
+    restart: unless-stopped
     networks:
-      - livora-network
+      - apartmentcare-network
+
+volumes:
+  mongodb_data:
 
 networks:
-  livora-network:
+  apartmentcare-network:
     driver: bridge
-    
