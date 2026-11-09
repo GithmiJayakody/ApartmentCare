@@ -1,112 +1,147 @@
-# 🏢 ApartmentCare – Apartment Maintenance Management System
+# ApartmentCare – Apartment Maintenance Management System
 
-**ApartmentCare** is a web-based apartment maintenance management system designed to simplify and streamline maintenance operations within apartment complexes. It provides a centralized platform where residents can report maintenance issues, technicians can manage and resolve assigned tasks, and managers can monitor and coordinate maintenance activities.
+ApartmentCare is a web-based apartment maintenance management system designed to simplify maintenance operations and improve communication between apartment residents, technicians, and management.
 
-The system aims to improve communication, reduce manual work, and ensure efficient maintenance management.
+The application provides a centralized platform where residents can submit maintenance requests, technicians can manage assigned tasks, and managers can oversee apartment maintenance activities.
 
-## 🚀 Key Features
+The application UI currently uses **Livora** as its branding name.
 
-### 👤 Resident
-- Submit maintenance requests.
-- View submitted maintenance requests.
-- Track maintenance request status.
-- View updates on reported issues.
+## Features
 
-### 🔧 Technician
-- View assigned maintenance requests.
-- Manage assigned maintenance tasks.
-- Update maintenance request status.
-- Provide maintenance progress updates.
+### 1. Resident Features
+- User Registration and Login
+- Submit Maintenance Requests
+- View Submitted Maintenance Requests
+- Track Maintenance Request Status
+- Communicate maintenance-related information
 
-### 🏢 Manager
-- Manage residents and technicians.
-- View and monitor maintenance requests.
-- Assign maintenance tasks to technicians.
-- Track overall maintenance activities.
+### 2. Technician Features
+- Technician Login
+- View Assigned Maintenance Tasks
+- Manage Assigned Tasks
+- Update Maintenance Progress
+- Track Task Status
 
-## 🛠️ Technology Stack
+### 3. Manager Features
+- Manager Login
+- Manage Residents
+- Assign Technicians to Maintenance Requests
+- Monitor Maintenance Activities
+- Oversee Maintenance Operations
 
-### Frontend
-- React.js
-- TypeScript
-- Tailwind CSS
-- Nginx
+### 4. System Features
+- Role-Based User Access
+- Secure User Authentication
+- Frontend and Backend Integration
+- RESTful API Communication
+- MongoDB Database Integration
 
-### Backend
-- Node.js
-- Express.js
-- JavaScript
 
-### Database
-- MongoDB
+## Technology Stack
 
-### DevOps & Deployment
-- Docker
-- Docker Compose
-- Git & GitHub
+| Component | Technology |
+|---|---|
+| Frontend | React |
+| Backend | Node.js |
+| Backend Framework | Express.js |
+| Database | MongoDB |
+| ODM | Mongoose |
+| Authentication | JSON Web Token (JWT) |
+| Containerization | Docker |
+| Container Orchestration | Docker Compose |
+| Web Server | Nginx |
+| Version Control | Git and GitHub |
 
-## 🏗️ System Architecture
-
-ApartmentCare follows a client-server architecture consisting of a frontend, backend API, and database.
-
-```text
-             Users
-               |
-               v
-       React Frontend
-          (Nginx)
-               |
-               v
-       Node.js Backend
-         (Express.js)
-               |
-               v
-           MongoDB
-```
-
-The application components are containerized using Docker and managed through Docker Compose.
-
-## 📁 Project Structure
+## Project Structure
 
 ```text
 ApartmentCare/
 │
 ├── Backend/
+│   ├── config/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── scripts/
+│   ├── tests/
+│   ├── .dockerignore
+│   ├── .gitignore
 │   ├── Dockerfile
 │   ├── package.json
-│   ├── .env
-│   └── ...
+│   ├── package-lock.json
+│   └── server.js
 │
 ├── Frontend/
+│   ├── public/
+│   ├── src/
+│   ├── tests/
+│   ├── .dockerignore
+│   ├── .gitignore
 │   ├── Dockerfile
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── nginx.conf
 │   ├── package.json
-│   └── ...
+│   ├── package-lock.json
+│   ├── playwright.config.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
 │
 ├── docker-compose.yml
-│
+├── .gitignore
+├── INTEGRATION_REPORT.md
 └── README.md
 ```
 
-## ⚙️ Prerequisites
+## System Architecture
 
-Before running the project, make sure you have installed:
+ApartmentCare follows a containerized architecture consisting of three main services.
+
+### Frontend
+Provides the user interface for residents, technicians, and managers. The frontend application is served using Nginx.
+
+### Backend
+Handles application logic, authentication, maintenance request processing, and API communication using Node.js and Express.js.
+
+### Database
+MongoDB stores user information, maintenance requests, and other application-related data.
+
+### Docker Architecture
+
+The three services communicate through a dedicated Docker network managed by Docker Compose.
+
+```text
+             Users
+               |
+               v
+          Frontend
+           (Nginx)
+               |
+               v
+           Backend
+        (Node.js / Express)
+               |
+               v
+           MongoDB
+           Database
+```
+
+## Installation and Setup
+
+### Prerequisites
+
+Make sure the following tools are installed:
 
 - Git
-- Node.js and npm
-- Docker Desktop
+- Docker Desktop (Windows) or Docker Engine (Linux)
 - Docker Compose
-
-## 📥 Installation and Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Githmijayakody/ApartmentCare.git
-```
-
-Navigate to the project directory:
-
-```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd ApartmentCare
 ```
 
@@ -114,120 +149,69 @@ cd ApartmentCare
 
 Create a `.env` file inside the `Backend` directory.
 
-Example:
-
 ```env
 PORT=5000
-MONGODB_URI=mongodb://mongodb:27017/ApartmentCare
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_secure_random_secret
+MONGO_URI=mongodb://mongodb:27017/ApartmentCare
 ```
 
-**Note:** Replace the example JWT secret with a secure secret. Never commit actual credentials or `.env` files to GitHub.
+Replace the JWT secret with a strong, randomly generated secret.
 
-### 3. Install Dependencies (Without Docker)
+### 3. Build Docker Images
 
-If you want to run the frontend and backend separately:
-
-**Backend:**
+Run the following command from the project root directory:
 
 ```bash
-cd Backend
-npm install
-npm run dev
+docker compose build
 ```
 
-**Frontend:**
-
-Open another terminal:
+### 4. Start the Application
 
 ```bash
-cd Frontend
-npm install
-npm run dev
+docker compose up -d
 ```
 
-### 4. Run Using Docker Compose
+This starts all three services:
 
-To build and start the containerized application, run the following command from the project root directory:
+- Frontend
+- Backend
+- MongoDB
 
-```bash
-docker compose up --build
-```
-
-To run the containers in detached mode:
-
-```bash
-docker compose up --build -d
-```
-
-To check running containers:
+### 5. Verify Running Containers
 
 ```bash
 docker compose ps
 ```
 
-To view container logs:
+All three containers should show a running status.
 
-```bash
-docker compose logs -f
-```
+### 6. Access the Application
 
-To stop the containers:
+Open the following URL in your browser:
+
+- **Frontend:** http://localhost:5173
+- **Backend:** http://localhost:5000
+- **API Health Check:** http://localhost:5000/api/health
+
+### 7. Stop the Application
 
 ```bash
 docker compose down
 ```
 
-**Note:** The local MongoDB service must be configured in `docker-compose.yml` with a persistent volume. The backend should connect to it using the Docker service hostname `mongodb`.
+**Note:** MongoDB data is stored in a Docker named volume and remains available when containers are stopped using `docker compose down`.
 
-## 🌐 Application Access
 
-After successfully starting the containers:
+## Project Objectives
 
-| Component | URL |
-|---|---|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:5000 |
-| MongoDB | mongodb://localhost:27017 |
-
-## 🐳 Dockerization
-
-The project uses Docker to package the frontend and backend into separate containers.
-
-Docker Compose is used to coordinate the application services.
-
-Benefits include:
-
-- Consistent development and deployment environments.
-- Simplified application setup.
-- Easier deployment across different machines.
-- Containerized application services.
-- Persistent database storage using Docker volumes.
-
-## 👥 User Roles
-
-ApartmentCare supports three main user roles:
-
-1. **Resident** – Reports and tracks apartment maintenance issues.
-2. **Technician** – Handles assigned maintenance requests.
-3. **Manager** – Coordinates maintenance operations and manages users.
-
-## 🎯 Project Objectives
-
-- Digitize apartment maintenance management.
+- Simplify apartment maintenance request management.
 - Improve communication between residents, technicians, and managers.
-- Reduce manual maintenance coordination.
-- Provide real-time visibility into maintenance request progress.
-- Demonstrate containerization and application deployment using Docker.
+- Provide an organized maintenance task management process.
+- Centralize apartment maintenance information.
+- Apply DevOps practices through Docker containerization and service orchestration.
+- Support consistent application deployment across different environments.
 
-## 👨‍💻 Development Team
-
-Developed as part of the **EC5205 – DevOps Engineering / Network Programming project**.
-
-**Project:** ApartmentCare – Apartment Maintenance Management System
-
-**Institution:** Faculty of Engineering, University of Ruhuna, Sri Lanka.
 
 ---
 
-⭐ If you find this project useful, feel free to explore the repository!
+*Developed as a DevOps Engineering project.*
